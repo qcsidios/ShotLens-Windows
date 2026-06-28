@@ -35,6 +35,8 @@ dotnet publish (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\ShotL
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:EnableCompressionInSingleFile=true
 
+Copy-Item (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\Resources\ShotLens.ico") $publishDir -Force
+
 $iscc = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
 if ($null -eq $iscc) {
     $defaultIscc = Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"

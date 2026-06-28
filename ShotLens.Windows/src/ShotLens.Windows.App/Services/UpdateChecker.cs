@@ -33,7 +33,7 @@ public sealed class UpdateChecker
             return new UpdateCheckResult(true, $"发现新版本 {release.Tag}", release.ReleaseUrl);
         }
 
-        return new UpdateCheckResult(false, $"当前已是最新版本 {VersionInfo.Current}", releaseUrl: null);
+        return new UpdateCheckResult(false, $"当前已是最新版本 {VersionInfo.Current}", ReleaseUrl: null);
     }
 
     public static void OpenReleasePage(string releaseUrl)

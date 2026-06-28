@@ -60,6 +60,9 @@ $env:SHOTLENS_VERSION = $Version
 $env:SHOTLENS_PUBLISH_DIR = $publishDir
 $env:SHOTLENS_INSTALLER_DIR = $buildDir
 & $iscc.Source (Join-Path $root "ShotLens.Windows\installer\ShotLens.iss")
+if ($LASTEXITCODE -ne 0) {
+    throw "Inno Setup compiler failed with exit code $LASTEXITCODE."
+}
 
 if (-not (Test-Path $installerPath)) {
     throw "Expected installer was not created: $installerPath"

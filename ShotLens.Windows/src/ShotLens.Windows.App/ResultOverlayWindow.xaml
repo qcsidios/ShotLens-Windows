@@ -7,17 +7,18 @@
         Topmost="True"
         Background="#111">
     <DockPanel>
-        <StackPanel DockPanel.Dock="Top"
-                    Orientation="Horizontal"
-                    Background="#EE111111"
-                    Padding="8">
-            <Button Content="复制译文" Click="CopyTextButton_Click"/>
-            <Button Content="关闭" Click="CloseButton_Click"/>
-            <TextBlock x:Name="SummaryTextBlock"
-                       VerticalAlignment="Center"
-                       Foreground="White"
-                       Margin="8,0,0,0"/>
-        </StackPanel>
+        <Border DockPanel.Dock="Top"
+                Background="#EE111111"
+                Padding="8">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="复制译文" Click="CopyTextButton_Click"/>
+                <Button Content="关闭" Click="CloseButton_Click"/>
+                <TextBlock x:Name="SummaryTextBlock"
+                           VerticalAlignment="Center"
+                           Foreground="White"
+                           Margin="8,0,0,0"/>
+            </StackPanel>
+        </Border>
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Image x:Name="ScreenshotImage" Stretch="None"/>

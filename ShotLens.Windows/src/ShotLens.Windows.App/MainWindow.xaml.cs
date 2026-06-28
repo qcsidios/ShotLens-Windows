@@ -34,18 +34,33 @@ public partial class MainWindow : Window
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         VersionTextBlock.Text = $"版本 {VersionInfo.Current}";
-        trayIconService.Start();
-        hotKeyService = new HotKeyService(this, settings.Shortcut, StartCaptureAsync);
-        if (TryRegisterHotKey())
+        try
         {
-            StatusTextBlock.Text = "准备就绪。";
+            trayIconService.Start();
+            hotKeyService = new HotKeyService(this, settings.Shortcut, StartCaptureAsync);
+            if (TryRegisterHotKey())
+            {
+                StatusTextBlock.Text = "准备就绪。";
+            }
+        }
+        catch (Exception ex)
+        {
+            App.WriteCrashLog(ex);
+            StatusTextBlock.Text = $"部分启动项失败：{ex.Message}";
         }
     }
 
     private void OnClosed(object? sender, EventArgs e)
     {
-        hotKeyService?.Dispose();
-        trayIconService.Dispose();
+        try
+        {
+            hotKeyService?.Dispose();
+            trayIconService.Dispose();
+        }
+        catch (Exception ex)
+        {
+            App.WriteCrashLog(ex);
+        }
     }
 
     private void SaveButton_Click(object sender, RoutedEventArgs e)

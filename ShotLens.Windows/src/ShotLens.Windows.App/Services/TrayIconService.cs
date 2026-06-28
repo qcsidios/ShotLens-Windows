@@ -53,7 +53,14 @@ public sealed class TrayIconService : IDisposable
 
     private static Icon LoadIcon()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "ShotLens.ico");
-        return File.Exists(path) ? new Icon(path) : SystemIcons.Application;
+        try
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "ShotLens.ico");
+            return File.Exists(path) ? new Icon(path) : SystemIcons.Application;
+        }
+        catch
+        {
+            return SystemIcons.Application;
+        }
     }
 }

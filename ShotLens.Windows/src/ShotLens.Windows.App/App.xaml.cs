@@ -1,6 +1,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
 using System.Windows.Media.Imaging;
 
 namespace ShotLens.Windows.App;
@@ -9,6 +10,15 @@ public partial class App : System.Windows.Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
+        DispatcherUnhandledException += OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            if (args.ExceptionObject is Exception exception)
+            {
+                WriteCrashLog(exception);
+            }
+        };
+
         _ = SetProcessDpiAwarenessContext(new IntPtr(-4));
         base.OnStartup(e);
 
@@ -19,9 +29,32 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        var window = new MainWindow();
-        MainWindow = window;
-        window.Show();
+        if (e.Args.Contains("--smoke-window", StringComparer.OrdinalIgnoreCase))
+        {
+            RunSmokeCheck();
+            var smokeWindow = new MainWindow();
+            smokeWindow.Show();
+            smokeWindow.Close();
+            Shutdown(0);
+            return;
+        }
+
+        try
+        {
+            var window = new MainWindow();
+            MainWindow = window;
+            window.Show();
+        }
+        catch (Exception ex)
+        {
+            WriteCrashLog(ex);
+            MessageBox.Show(
+                $"ShotLens 启动失败，错误已写入：{CrashLogPath}\n\n{ex.Message}",
+                "ShotLens",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown(1);
+        }
     }
 
     [DllImport("user32.dll")]
@@ -48,4 +81,36 @@ public partial class App : System.Windows.Application
         logo.EndInit();
         _ = logo.PixelWidth;
     }
+
+    internal static void WriteCrashLog(Exception exception)
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(CrashLogPath)!);
+            File.AppendAllText(
+                CrashLogPath,
+                $"[{DateTimeOffset.Now:O}] {exception}\n\n");
+        }
+        catch
+        {
+            // 如果日志本身写失败，避免二次崩溃。
+        }
+    }
+
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        WriteCrashLog(e.Exception);
+        MessageBox.Show(
+            $"ShotLens 运行异常，错误已写入：{CrashLogPath}\n\n{e.Exception.Message}",
+            "ShotLens",
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+        e.Handled = true;
+    }
+
+    private static string CrashLogPath =>
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ShotLens",
+            "crash.log");
 }

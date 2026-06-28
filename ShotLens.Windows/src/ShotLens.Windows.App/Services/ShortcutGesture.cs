@@ -13,6 +13,7 @@ public sealed class ShortcutGesture
     public static ShortcutGesture Default => new()
     {
         Control = true,
+        Alt = true,
         Key = "S"
     };
 

@@ -43,6 +43,11 @@ if ($smoke.ExitCode -ne 0) {
     throw "Windows app smoke launch failed with exit code $($smoke.ExitCode)."
 }
 
+$windowSmoke = Start-Process $appExe -ArgumentList "--smoke-window" -Wait -PassThru
+if ($windowSmoke.ExitCode -ne 0) {
+    throw "Windows app window smoke launch failed with exit code $($windowSmoke.ExitCode)."
+}
+
 $iscc = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
 if ($null -eq $iscc) {
     $defaultIscc = Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"

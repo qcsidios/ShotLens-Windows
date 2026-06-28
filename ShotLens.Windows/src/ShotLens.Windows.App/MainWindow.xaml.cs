@@ -1,5 +1,8 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using ShotLens.Windows.App.Services;
 using ShotLens.Windows.Core;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -19,6 +22,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Icon = LoadWindowIcon();
+        LogoImage.Source = LoadLogoImage();
         settings = settingsStore.Load();
         trayIconService = new TrayIconService(
             showWindow: () => Dispatcher.Invoke(ShowMainWindow),
@@ -262,5 +267,29 @@ public partial class MainWindow : Window
             StatusTextBlock.Text = ex.Message;
             return false;
         }
+    }
+
+    private static ImageSource? LoadLogoImage()
+    {
+        var image = new BitmapImage();
+        image.BeginInit();
+        image.UriSource = new Uri("pack://application:,,,/Resources/ShotLens.png", UriKind.Absolute);
+        image.CacheOption = BitmapCacheOption.OnLoad;
+        image.EndInit();
+        image.Freeze();
+        return image;
+    }
+
+    private static ImageSource? LoadWindowIcon()
+    {
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "ShotLens.ico");
+        if (!File.Exists(iconPath))
+        {
+            return null;
+        }
+
+        var frame = BitmapFrame.Create(new Uri(iconPath, UriKind.Absolute));
+        frame.Freeze();
+        return frame;
     }
 }

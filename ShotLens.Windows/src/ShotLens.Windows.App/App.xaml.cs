@@ -34,7 +34,6 @@ public partial class App : System.Windows.Application
         {
             RunSmokeCheck();
             var smokeWindow = new MainWindow();
-            smokeWindow.Show();
             smokeWindow.Close();
             Shutdown(0);
             return;

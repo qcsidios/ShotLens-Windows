@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using ShotLens.Windows.Core;
 using Windows.Globalization;
 using Windows.Graphics.Imaging;

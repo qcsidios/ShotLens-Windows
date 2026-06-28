@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Input;
 using ShotLens.Windows.App.Services;
 using ShotLens.Windows.Core;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace ShotLens.Windows.App;
 

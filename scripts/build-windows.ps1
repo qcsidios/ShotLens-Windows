@@ -19,6 +19,7 @@ $buildDir = Join-Path $root "build\windows"
 $publishDir = Join-Path $buildDir "publish"
 $packageDir = Join-Path $buildDir "package\ShotLens"
 $zipPath = Join-Path $buildDir "ShotLens-Windows-$Version.zip"
+$installerPath = Join-Path $buildDir "ShotLens-Windows-$Version-Setup.exe"
 
 Remove-Item $buildDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item $publishDir -ItemType Directory -Force | Out-Null
@@ -42,4 +43,27 @@ Copy-Item (Join-Path $root "README.md") $packageDir
 Copy-Item (Join-Path $root "LICENSE") $packageDir
 
 Compress-Archive -Path (Join-Path $packageDir "*") -DestinationPath $zipPath -Force
+
+$iscc = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
+if ($null -eq $iscc) {
+    $defaultIscc = Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"
+    if (Test-Path $defaultIscc) {
+        $iscc = Get-Item $defaultIscc
+    }
+}
+
+if ($null -eq $iscc) {
+    throw "Inno Setup compiler ISCC.exe was not found. Install Inno Setup 6 before building the Windows installer."
+}
+
+$env:SHOTLENS_VERSION = $Version
+$env:SHOTLENS_PUBLISH_DIR = $publishDir
+$env:SHOTLENS_INSTALLER_DIR = $buildDir
+& $iscc.Source (Join-Path $root "ShotLens.Windows\installer\ShotLens.iss")
+
+if (-not (Test-Path $installerPath)) {
+    throw "Expected installer was not created: $installerPath"
+}
+
+Write-Output $installerPath
 Write-Output $zipPath

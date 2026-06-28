@@ -26,6 +26,10 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      - name: Set up Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+
       - name: Resolve release version
         id: version
         shell: pwsh
@@ -52,7 +56,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ShotLens-Windows-${{ steps.version.outputs.version }}
-          path: build/windows/ShotLens-Windows-${{ steps.version.outputs.version }}.zip
+          path: |
+            build/windows/ShotLens-Windows-${{ steps.version.outputs.version }}-Setup.exe
+            build/windows/ShotLens-Windows-${{ steps.version.outputs.version }}.zip
 
       - name: Upload GitHub Release asset
         shell: pwsh
@@ -70,4 +76,5 @@ jobs:
               gh release create $version --title "ShotLens $version" --notes "ShotLens $version Windows release."
             }
           }
-          gh release upload $version $asset --clobber
+          $installer = "build/windows/ShotLens-Windows-$version-Setup.exe"
+          gh release upload $version $installer $asset --clobber

@@ -140,7 +140,7 @@ public partial class MainWindow : Window
                 Arguments = "/SILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS"
             });
             Close();
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
         catch (Exception ex)
         {

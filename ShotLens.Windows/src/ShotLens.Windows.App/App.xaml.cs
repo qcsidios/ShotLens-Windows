@@ -33,10 +33,8 @@ public partial class App : System.Windows.Application
         if (e.Args.Contains("--smoke-window", StringComparer.OrdinalIgnoreCase))
         {
             RunSmokeCheck();
-            var smokeWindow = new MainWindow();
-            smokeWindow.Close();
-            Shutdown(0);
-            return;
+            _ = new MainWindow();
+            Environment.Exit(0);
         }
 
         try

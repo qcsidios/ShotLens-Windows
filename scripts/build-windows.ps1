@@ -17,13 +17,10 @@ if ($Version -notmatch '^v\d+\.\d+\.\d+$') {
 
 $buildDir = Join-Path $root "build\windows"
 $publishDir = Join-Path $buildDir "publish"
-$packageDir = Join-Path $buildDir "package\ShotLens"
-$zipPath = Join-Path $buildDir "ShotLens-Windows-$Version.zip"
 $installerPath = Join-Path $buildDir "ShotLens-Windows-$Version-Setup.exe"
 
 Remove-Item $buildDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item $publishDir -ItemType Directory -Force | Out-Null
-New-Item $packageDir -ItemType Directory -Force | Out-Null
 
 if (-not $SkipTests) {
     dotnet run --project (Join-Path $root "ShotLens.Windows\tests\ShotLens.Windows.Core.Tests\ShotLens.Windows.Core.Tests.csproj") --configuration Release
@@ -37,12 +34,6 @@ dotnet publish (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\ShotL
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:EnableCompressionInSingleFile=true
-
-Copy-Item (Join-Path $publishDir "*") $packageDir -Recurse
-Copy-Item (Join-Path $root "README.md") $packageDir
-Copy-Item (Join-Path $root "LICENSE") $packageDir
-
-Compress-Archive -Path (Join-Path $packageDir "*") -DestinationPath $zipPath -Force
 
 $iscc = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
 if ($null -eq $iscc) {
@@ -69,4 +60,3 @@ if (-not (Test-Path $installerPath)) {
 }
 
 Write-Output $installerPath
-Write-Output $zipPath

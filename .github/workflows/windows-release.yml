@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version, must match VERSION"
         required: false
-        default: "v0.8.7"
+        default: "v0.8.8"
   push:
     tags:
       - "v*"
@@ -56,9 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ShotLens-Windows-${{ steps.version.outputs.version }}
-          path: |
-            build/windows/ShotLens-Windows-${{ steps.version.outputs.version }}-Setup.exe
-            build/windows/ShotLens-Windows-${{ steps.version.outputs.version }}.zip
+          path: build/windows/ShotLens-Windows-${{ steps.version.outputs.version }}-Setup.exe
 
       - name: Upload GitHub Release asset
         shell: pwsh
@@ -66,7 +64,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $version = "${{ steps.version.outputs.version }}"
-          $asset = "build/windows/ShotLens-Windows-$version.zip"
           gh release view $version 2>$null
           if ($LASTEXITCODE -ne 0) {
             $notes = "scripts/release-notes/$version.md"
@@ -77,4 +74,4 @@ jobs:
             }
           }
           $installer = "build/windows/ShotLens-Windows-$version-Setup.exe"
-          gh release upload $version $installer $asset --clobber
+          gh release upload $version $installer --clobber

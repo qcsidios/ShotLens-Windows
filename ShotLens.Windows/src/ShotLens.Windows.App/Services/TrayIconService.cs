@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ShotLens.Windows.App.Services;
@@ -22,7 +23,7 @@ public sealed class TrayIconService : IDisposable
         notifyIcon = new NotifyIcon
         {
             Text = "ShotLens",
-            Icon = SystemIcons.Application,
+            Icon = LoadIcon(),
             Visible = true,
             ContextMenuStrip = BuildMenu()
         };
@@ -48,5 +49,11 @@ public sealed class TrayIconService : IDisposable
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("退出 ShotLens", null, (_, _) => exit());
         return menu;
+    }
+
+    private static Icon LoadIcon()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "ShotLens.ico");
+        return File.Exists(path) ? new Icon(path) : SystemIcons.Application;
     }
 }

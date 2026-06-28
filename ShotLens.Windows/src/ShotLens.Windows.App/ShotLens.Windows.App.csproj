@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <ApplicationIcon />
+    <ApplicationIcon>Resources\ShotLens.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +15,7 @@
 
   <ItemGroup>
     <Content Include="../../../VERSION" Link="VERSION" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="Resources\ShotLens.png" />
+    <Content Include="Resources\ShotLens.ico" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using ShotLens.Windows.App.Services;
 using ShotLens.Windows.Core;
 
@@ -12,6 +13,7 @@ public partial class MainWindow : Window
     private HotKeyService? hotKeyService;
     private ShotLensSettings settings;
     private bool isProcessing;
+    private bool isRecordingShortcut;
 
     public MainWindow()
     {
@@ -24,6 +26,7 @@ public partial class MainWindow : Window
 
         Loaded += OnLoaded;
         Closed += OnClosed;
+        PreviewKeyDown += OnPreviewKeyDown;
         LoadSettingsIntoForm();
     }
 
@@ -31,9 +34,11 @@ public partial class MainWindow : Window
     {
         VersionTextBlock.Text = $"版本 {VersionInfo.Current}";
         trayIconService.Start();
-        hotKeyService = new HotKeyService(this, StartCaptureAsync);
-        hotKeyService.Register();
-        StatusTextBlock.Text = "准备就绪。";
+        hotKeyService = new HotKeyService(this, settings.Shortcut, StartCaptureAsync);
+        if (TryRegisterHotKey())
+        {
+            StatusTextBlock.Text = "准备就绪。";
+        }
     }
 
     private void OnClosed(object? sender, EventArgs e)
@@ -75,9 +80,7 @@ public partial class MainWindow : Window
         try
         {
             var result = await updateChecker.CheckAsync();
-            StatusTextBlock.Text = result.ReleaseUrl is null
-                ? result.Message
-                : $"{result.Message}：{result.ReleaseUrl}";
+            StatusTextBlock.Text = result.Message;
             if (result.HasUpdate && result.ReleaseUrl is not null)
             {
                 UpdateChecker.OpenReleasePage(result.ReleaseUrl);
@@ -171,15 +174,77 @@ public partial class MainWindow : Window
         ApiKeyPasswordBox.Password = settings.ApiKey;
         ModelTextBox.Text = settings.Model;
         UseDefaultCheckBox.IsChecked = settings.DefaultFallbackEnabled;
+        ShortcutTextBlock.Text = settings.Shortcut.DisplayText;
     }
 
     private void SaveSettingsFromForm()
     {
-        settings = new ShotLensSettings(
-            EndpointTextBox.Text.Trim(),
-            ApiKeyPasswordBox.Password.Trim(),
-            ModelTextBox.Text.Trim(),
-            UseDefaultCheckBox.IsChecked ?? true);
+        settings = new ShotLensSettings
+        {
+            ApiEndpoint = EndpointTextBox.Text.Trim(),
+            ApiKey = ApiKeyPasswordBox.Password.Trim(),
+            Model = ModelTextBox.Text.Trim(),
+            DefaultFallbackEnabled = UseDefaultCheckBox.IsChecked ?? true,
+            Shortcut = settings.Shortcut
+        };
         settingsStore.Save(settings);
+    }
+
+    private void RecordShortcutButton_Click(object sender, RoutedEventArgs e)
+    {
+        isRecordingShortcut = true;
+        RecordShortcutButton.Content = "录制中";
+        ShortcutTextBlock.Text = "请按新的快捷键";
+    }
+
+    private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (!isRecordingShortcut)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        var key = e.Key == Key.System ? e.SystemKey : e.Key;
+        try
+        {
+            var shortcut = ShortcutGesture.FromInput(key, Keyboard.Modifiers);
+            settings = new ShotLensSettings
+            {
+                ApiEndpoint = EndpointTextBox.Text.Trim(),
+                ApiKey = ApiKeyPasswordBox.Password.Trim(),
+                Model = ModelTextBox.Text.Trim(),
+                DefaultFallbackEnabled = UseDefaultCheckBox.IsChecked ?? true,
+                Shortcut = shortcut
+            };
+            hotKeyService?.Update(shortcut);
+            settingsStore.Save(settings);
+            ShortcutTextBlock.Text = shortcut.DisplayText;
+            StatusTextBlock.Text = "快捷键已更新。";
+        }
+        catch (Exception ex)
+        {
+            ShortcutTextBlock.Text = settings.Shortcut.DisplayText;
+            StatusTextBlock.Text = ex.Message;
+        }
+        finally
+        {
+            isRecordingShortcut = false;
+            RecordShortcutButton.Content = "设置";
+        }
+    }
+
+    private bool TryRegisterHotKey()
+    {
+        try
+        {
+            hotKeyService?.Register();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            StatusTextBlock.Text = ex.Message;
+            return false;
+        }
     }
 }

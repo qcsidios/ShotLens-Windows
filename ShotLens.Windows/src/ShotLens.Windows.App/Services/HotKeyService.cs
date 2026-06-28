@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace ShotLens.Windows.App.Services;
@@ -9,16 +10,19 @@ public sealed class HotKeyService : IDisposable
     private const int HotKeyId = 0x5348;
     private const uint ModAlt = 0x0001;
     private const uint ModControl = 0x0002;
-    private const uint VkT = 0x54;
+    private const uint ModShift = 0x0004;
+    private const uint ModWin = 0x0008;
     private const int WmHotKey = 0x0312;
 
     private readonly Window window;
     private readonly Action callback;
     private HwndSource? source;
+    private ShortcutGesture shortcut;
 
-    public HotKeyService(Window window, Action callback)
+    public HotKeyService(Window window, ShortcutGesture shortcut, Action callback)
     {
         this.window = window;
+        this.shortcut = shortcut;
         this.callback = callback;
     }
 
@@ -27,7 +31,21 @@ public sealed class HotKeyService : IDisposable
         var helper = new WindowInteropHelper(window);
         source = HwndSource.FromHwnd(helper.Handle);
         source?.AddHook(WndProc);
-        RegisterHotKey(helper.Handle, HotKeyId, ModControl | ModAlt, VkT);
+        if (!RegisterHotKey(helper.Handle, HotKeyId, ModifierFlags(shortcut), VirtualKey(shortcut)))
+        {
+            throw new InvalidOperationException($"快捷键 {shortcut.DisplayText} 注册失败，可能已被其他应用占用。");
+        }
+    }
+
+    public void Update(ShortcutGesture newShortcut)
+    {
+        var helper = new WindowInteropHelper(window);
+        UnregisterHotKey(helper.Handle, HotKeyId);
+        shortcut = newShortcut;
+        if (!RegisterHotKey(helper.Handle, HotKeyId, ModifierFlags(shortcut), VirtualKey(shortcut)))
+        {
+            throw new InvalidOperationException($"快捷键 {shortcut.DisplayText} 注册失败，可能已被其他应用占用。");
+        }
     }
 
     public void Dispose()
@@ -53,4 +71,17 @@ public sealed class HotKeyService : IDisposable
 
     [DllImport("user32.dll")]
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+    private static uint ModifierFlags(ShortcutGesture gesture)
+    {
+        uint flags = 0;
+        if (gesture.Control) flags |= ModControl;
+        if (gesture.Alt) flags |= ModAlt;
+        if (gesture.Shift) flags |= ModShift;
+        if (gesture.Windows) flags |= ModWin;
+        return flags;
+    }
+
+    private static uint VirtualKey(ShortcutGesture gesture) =>
+        (uint)KeyInterop.VirtualKeyFromKey(gesture.ToWpfKey());
 }

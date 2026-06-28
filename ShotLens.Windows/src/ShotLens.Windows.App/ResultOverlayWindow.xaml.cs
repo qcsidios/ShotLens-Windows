@@ -47,8 +47,13 @@ public partial class ResultOverlayWindow : Window
                 TextWrapping = TextWrapping.Wrap,
                 Foreground = MediaBrushes.Black,
                 FontWeight = FontWeights.SemiBold,
-                FontSize = Math.Clamp(block.Height * 0.58, 11, 24)
+                FontSize = Math.Clamp(block.Height * 0.42, 10, 18)
             };
+
+            var left = Math.Clamp(block.X, 0, Math.Max(0, TranslationCanvas.Width - 1));
+            var top = Math.Clamp(block.Y, 0, Math.Max(0, TranslationCanvas.Height - 1));
+            var maxWidth = Math.Max(32, TranslationCanvas.Width - left);
+            var maxHeight = Math.Max(18, TranslationCanvas.Height - top);
 
             var border = new Border
             {
@@ -58,12 +63,13 @@ public partial class ResultOverlayWindow : Window
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(3),
                 Padding = new Thickness(3),
-                Width = Math.Max(block.Width, 56),
-                MinHeight = Math.Max(block.Height, 18)
+                Width = Math.Min(Math.Max(block.Width, 56), maxWidth),
+                MaxHeight = maxHeight,
+                MinHeight = Math.Min(Math.Max(block.Height, 18), maxHeight)
             };
 
-            Canvas.SetLeft(border, block.X);
-            Canvas.SetTop(border, block.Y);
+            Canvas.SetLeft(border, left);
+            Canvas.SetTop(border, top);
             TranslationCanvas.Children.Add(border);
         }
     }

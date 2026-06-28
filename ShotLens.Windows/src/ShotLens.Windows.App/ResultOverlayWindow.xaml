@@ -22,7 +22,7 @@
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Image x:Name="ScreenshotImage" Stretch="None"/>
-                <Canvas x:Name="TranslationCanvas" IsHitTestVisible="False"/>
+                <Canvas x:Name="TranslationCanvas" IsHitTestVisible="False" ClipToBounds="True"/>
             </Grid>
         </ScrollViewer>
     </DockPanel>

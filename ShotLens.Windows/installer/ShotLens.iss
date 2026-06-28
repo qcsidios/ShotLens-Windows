@@ -21,6 +21,7 @@ WizardStyle=modern
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 PrivilegesRequired=lowest
+SetupIconFile={#ShotLensPublishDir}\ShotLens.ico
 UninstallDisplayName=ShotLens
 
 [Languages]

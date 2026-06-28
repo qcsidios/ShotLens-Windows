@@ -6,14 +6,16 @@
         ShowInTaskbar="False"
         Topmost="True"
         AllowsTransparency="False"
-        Cursor="Cross">
+        Cursor="Cross"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True">
     <Grid>
-        <Image x:Name="ScreenshotImage" Stretch="Fill"/>
-        <Canvas x:Name="OverlayCanvas" Background="#22000000">
+        <Image x:Name="ScreenshotImage" Stretch="Fill" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Canvas x:Name="OverlayCanvas" Background="Transparent">
             <Rectangle x:Name="SelectionRectangle"
                        Stroke="#33A1FF"
                        StrokeThickness="2"
-                       Fill="#2233A1FF"
+                       Fill="#1833A1FF"
                        Visibility="Collapsed"/>
         </Canvas>
         <Border HorizontalAlignment="Center"

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Media.Imaging;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace ShotLens.Windows.App;
 
@@ -48,7 +49,7 @@ public partial class App : System.Windows.Application
         catch (Exception ex)
         {
             WriteCrashLog(ex);
-            MessageBox.Show(
+            WpfMessageBox.Show(
                 $"ShotLens 启动失败，错误已写入：{CrashLogPath}\n\n{ex.Message}",
                 "ShotLens",
                 MessageBoxButton.OK,
@@ -100,7 +101,7 @@ public partial class App : System.Windows.Application
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         WriteCrashLog(e.Exception);
-        MessageBox.Show(
+        WpfMessageBox.Show(
             $"ShotLens 运行异常，错误已写入：{CrashLogPath}\n\n{e.Exception.Message}",
             "ShotLens",
             MessageBoxButton.OK,

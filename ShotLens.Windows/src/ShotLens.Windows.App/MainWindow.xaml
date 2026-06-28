@@ -33,7 +33,10 @@
                 <TextBlock Text="ShotLens" FontSize="24" FontWeight="SemiBold"/>
                 <TextBlock x:Name="VersionTextBlock" Foreground="#667085" Margin="0,3,0,0"/>
             </StackPanel>
-            <Button Grid.Column="2" Content="检测新版本" Click="CheckUpdateButton_Click" VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button x:Name="CheckUpdateButton" Content="检测新版本" Click="CheckUpdateButton_Click"/>
+                <Button x:Name="InstallUpdateButton" Content="升级" Click="InstallUpdateButton_Click" Visibility="Collapsed"/>
+            </StackPanel>
         </Grid>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">

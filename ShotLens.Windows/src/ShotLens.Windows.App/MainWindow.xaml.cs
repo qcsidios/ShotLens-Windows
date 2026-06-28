@@ -1,4 +1,5 @@
 using System.IO;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -16,6 +17,7 @@ public partial class MainWindow : Window
     private readonly TrayIconService trayIconService;
     private HotKeyService? hotKeyService;
     private ShotLensSettings settings;
+    private UpdateCheckResult? pendingUpdate;
     private bool isProcessing;
     private bool isRecordingShortcut;
 
@@ -102,14 +104,50 @@ public partial class MainWindow : Window
         {
             var result = await updateChecker.CheckAsync();
             StatusTextBlock.Text = result.Message;
-            if (result.HasUpdate && result.ReleaseUrl is not null)
-            {
-                UpdateChecker.OpenReleasePage(result.ReleaseUrl);
-            }
+            pendingUpdate = result.HasUpdate ? result : null;
+            InstallUpdateButton.Visibility = result.HasUpdate ? Visibility.Visible : Visibility.Collapsed;
         }
         catch (Exception ex)
         {
             StatusTextBlock.Text = $"检查更新失败：{ex.Message}";
+            pendingUpdate = null;
+            InstallUpdateButton.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private async void InstallUpdateButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (pendingUpdate is null)
+        {
+            StatusTextBlock.Text = "请先检测新版本。";
+            return;
+        }
+
+        InstallUpdateButton.IsEnabled = false;
+        CheckUpdateButton.IsEnabled = false;
+        try
+        {
+            StatusTextBlock.Text = "正在下载更新…";
+            var progress = new Progress<double>(value =>
+            {
+                StatusTextBlock.Text = $"正在下载更新… {value:P0}";
+            });
+            var installerPath = await updateChecker.DownloadInstallerAsync(pendingUpdate, progress);
+            StatusTextBlock.Text = "正在启动安装程序…";
+            Process.Start(new ProcessStartInfo(installerPath)
+            {
+                UseShellExecute = true,
+                Arguments = "/SILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS"
+            });
+            Close();
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            App.WriteCrashLog(ex);
+            StatusTextBlock.Text = $"升级失败：{ex.Message}";
+            InstallUpdateButton.IsEnabled = true;
+            CheckUpdateButton.IsEnabled = true;
         }
     }
 

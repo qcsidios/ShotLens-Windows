@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -6,7 +7,12 @@ using ShotLens.Windows.Core;
 
 namespace ShotLens.Windows.App.Services;
 
-public sealed record UpdateCheckResult(bool HasUpdate, string Message, string? ReleaseUrl);
+public sealed record UpdateCheckResult(
+    bool HasUpdate,
+    string Message,
+    string? Version,
+    string? ReleaseUrl,
+    string? InstallerUrl);
 
 public sealed class UpdateChecker
 {
@@ -30,10 +36,64 @@ public sealed class UpdateChecker
 
         if (release is not null && CompareVersions(release.Tag, VersionInfo.Current) > 0)
         {
-            return new UpdateCheckResult(true, $"发现新版本 {release.Tag}", release.ReleaseUrl);
+            return new UpdateCheckResult(
+                true,
+                $"发现新版本 {release.Tag}",
+                release.Tag,
+                release.ReleaseUrl,
+                release.InstallerUrl);
         }
 
-        return new UpdateCheckResult(false, $"当前已是最新版本 {VersionInfo.Current}", ReleaseUrl: null);
+        return new UpdateCheckResult(
+            false,
+            $"当前已是最新版本 {VersionInfo.Current}",
+            Version: null,
+            ReleaseUrl: null,
+            InstallerUrl: null);
+    }
+
+    public async Task<string> DownloadInstallerAsync(
+        UpdateCheckResult update,
+        IProgress<double>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(update.InstallerUrl) || string.IsNullOrWhiteSpace(update.Version))
+        {
+            throw new InvalidOperationException("没有可下载的 Windows 安装包。");
+        }
+
+        var destination = Path.Combine(
+            Path.GetTempPath(),
+            $"ShotLens-Windows-{update.Version}-Setup.exe");
+        using var response = await httpClient.GetAsync(
+            update.InstallerUrl,
+            HttpCompletionOption.ResponseHeadersRead,
+            cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var total = response.Content.Headers.ContentLength;
+        await using var source = await response.Content.ReadAsStreamAsync(cancellationToken);
+        await using var target = File.Create(destination);
+        var buffer = new byte[1024 * 128];
+        long readTotal = 0;
+        while (true)
+        {
+            var read = await source.ReadAsync(buffer, cancellationToken);
+            if (read == 0)
+            {
+                break;
+            }
+
+            await target.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+            readTotal += read;
+            if (total is > 0)
+            {
+                progress?.Report((double)readTotal / total.Value);
+            }
+        }
+
+        progress?.Report(1);
+        return destination;
     }
 
     public static void OpenReleasePage(string releaseUrl)
@@ -95,16 +155,24 @@ public sealed class UpdateChecker
             return null;
         }
 
+        string? installerUrl = null;
         var hasInstaller = assets.EnumerateArray().Any(asset =>
         {
             var name = asset.TryGetProperty("name", out var assetName) ? assetName.GetString() ?? "" : "";
-            return name.StartsWith("ShotLens-Windows-", StringComparison.Ordinal)
+            var isInstaller = name.StartsWith("ShotLens-Windows-", StringComparison.Ordinal)
                 && name.EndsWith("-Setup.exe", StringComparison.Ordinal)
                 && name.Contains(tag, StringComparison.Ordinal);
+            if (isInstaller && asset.TryGetProperty("browser_download_url", out var downloadUrl))
+            {
+                installerUrl = downloadUrl.GetString();
+            }
+            return isInstaller;
         });
 
-        return hasInstaller ? new WindowsRelease(tag, releaseUrl) : null;
+        return hasInstaller && !string.IsNullOrWhiteSpace(installerUrl)
+            ? new WindowsRelease(tag, releaseUrl, installerUrl!)
+            : null;
     }
 
-    private sealed record WindowsRelease(string Tag, string ReleaseUrl);
+    private sealed record WindowsRelease(string Tag, string ReleaseUrl, string InstallerUrl);
 }

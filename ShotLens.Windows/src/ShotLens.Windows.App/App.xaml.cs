@@ -10,6 +10,13 @@ public partial class App : System.Windows.Application
         _ = SetProcessDpiAwarenessContext(new IntPtr(-4));
         base.OnStartup(e);
 
+        if (e.Args.Contains("--smoke", StringComparer.OrdinalIgnoreCase))
+        {
+            _ = new MainWindow();
+            Shutdown(0);
+            return;
+        }
+
         var window = new MainWindow();
         MainWindow = window;
         window.Show();

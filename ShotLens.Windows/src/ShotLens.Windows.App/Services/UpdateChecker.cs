@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using ShotLens.Windows.Core;
 
 namespace ShotLens.Windows.App.Services;
@@ -9,7 +10,7 @@ public sealed record UpdateCheckResult(bool HasUpdate, string Message, string? R
 
 public sealed class UpdateChecker
 {
-    private static readonly Uri LatestReleaseUri = new("https://api.github.com/repos/qcsidios/ShotLens/releases/latest");
+    private static readonly Uri ReleasesUri = new("https://api.github.com/repos/qcsidios/ShotLens/releases?per_page=30");
     private readonly HttpClient httpClient;
 
     public UpdateChecker(HttpClient? httpClient = null)
@@ -23,23 +24,16 @@ public sealed class UpdateChecker
 
     public async Task<UpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
     {
-        var body = await httpClient.GetStringAsync(LatestReleaseUri, cancellationToken);
+        var body = await httpClient.GetStringAsync(ReleasesUri, cancellationToken);
         using var document = JsonDocument.Parse(body);
-        var root = document.RootElement;
-        var tag = root.TryGetProperty("tag_name", out var tagName) ? tagName.GetString() ?? "" : "";
-        var releaseUrl = root.TryGetProperty("html_url", out var htmlUrl) ? htmlUrl.GetString() : null;
+        var release = FindLatestWindowsRelease(document.RootElement);
 
-        if (string.IsNullOrWhiteSpace(tag))
+        if (release is not null && CompareVersions(release.Tag, VersionInfo.Current) > 0)
         {
-            throw new InvalidOperationException("GitHub Release 返回格式无效。");
+            return new UpdateCheckResult(true, $"发现新版本 {release.Tag}", release.ReleaseUrl);
         }
 
-        if (CompareVersions(tag, VersionInfo.Current) > 0)
-        {
-            return new UpdateCheckResult(true, $"发现新版本 {tag}", releaseUrl);
-        }
-
-        return new UpdateCheckResult(false, $"当前已是最新版本 {VersionInfo.Current}", releaseUrl);
+        return new UpdateCheckResult(false, $"当前已是最新版本 {VersionInfo.Current}", releaseUrl: null);
     }
 
     public static void OpenReleasePage(string releaseUrl)
@@ -68,7 +62,49 @@ public sealed class UpdateChecker
     }
 
     private static int[] VersionParts(string version) =>
-        version.Trim().TrimStart('v', 'V').Split('.')
+        Regex.Match(version, @"(\d+(?:\.\d+){1,3})").Value.Split('.')
             .Select(part => int.TryParse(part, out var value) ? value : 0)
             .ToArray();
+
+    private static WindowsRelease? FindLatestWindowsRelease(JsonElement root)
+    {
+        if (root.ValueKind != JsonValueKind.Array)
+        {
+            throw new InvalidOperationException("GitHub Release 返回格式无效。");
+        }
+
+        return root.EnumerateArray()
+            .Where(release => !release.TryGetProperty("draft", out var draft) || !draft.GetBoolean())
+            .Select(ParseWindowsRelease)
+            .Where(release => release is not null)
+            .OrderByDescending(release => release!.Tag, Comparer<string>.Create(CompareVersions))
+            .FirstOrDefault();
+    }
+
+    private static WindowsRelease? ParseWindowsRelease(JsonElement release)
+    {
+        var tag = release.TryGetProperty("tag_name", out var tagName) ? tagName.GetString() ?? "" : "";
+        var releaseUrl = release.TryGetProperty("html_url", out var htmlUrl) ? htmlUrl.GetString() : null;
+        if (VersionParts(tag).Length < 2 || string.IsNullOrWhiteSpace(releaseUrl))
+        {
+            return null;
+        }
+
+        if (!release.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+
+        var hasInstaller = assets.EnumerateArray().Any(asset =>
+        {
+            var name = asset.TryGetProperty("name", out var assetName) ? assetName.GetString() ?? "" : "";
+            return name.StartsWith("ShotLens-Windows-", StringComparison.Ordinal)
+                && name.EndsWith("-Setup.exe", StringComparison.Ordinal)
+                && name.Contains(tag, StringComparison.Ordinal);
+        });
+
+        return hasInstaller ? new WindowsRelease(tag, releaseUrl) : null;
+    }
+
+    private sealed record WindowsRelease(string Tag, string ReleaseUrl);
 }

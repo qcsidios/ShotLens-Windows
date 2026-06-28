@@ -37,6 +37,12 @@ dotnet publish (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\ShotL
 
 Copy-Item (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\Resources\ShotLens.ico") $publishDir -Force
 
+$appExe = Join-Path $publishDir "ShotLens.Windows.App.exe"
+$smoke = Start-Process $appExe -ArgumentList "--smoke" -Wait -PassThru
+if ($smoke.ExitCode -ne 0) {
+    throw "Windows app smoke launch failed with exit code $($smoke.ExitCode)."
+}
+
 $iscc = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
 if ($null -eq $iscc) {
     $defaultIscc = Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"

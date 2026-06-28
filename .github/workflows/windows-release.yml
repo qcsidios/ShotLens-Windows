@@ -1,0 +1,73 @@
+name: Windows Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, must match VERSION"
+        required: false
+        default: "v0.8.7"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Resolve release version
+        id: version
+        shell: pwsh
+        run: |
+          $fileVersion = (Get-Content VERSION -Raw).Trim()
+          $requested = "${{ github.event.inputs.version }}"
+          if ([string]::IsNullOrWhiteSpace($requested)) {
+            $requested = "${{ github.ref_name }}"
+          }
+          if ([string]::IsNullOrWhiteSpace($requested) -or $requested -eq "${{ github.ref_name }}") {
+            $requested = $fileVersion
+          }
+          if ($requested -ne $fileVersion) {
+            throw "Requested version $requested does not match VERSION $fileVersion."
+          }
+          "version=$fileVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Build Windows package
+        shell: pwsh
+        run: |
+          ./scripts/build-windows.ps1 -Version "${{ steps.version.outputs.version }}"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShotLens-Windows-${{ steps.version.outputs.version }}
+          path: build/windows/ShotLens-Windows-${{ steps.version.outputs.version }}.zip
+
+      - name: Upload GitHub Release asset
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $asset = "build/windows/ShotLens-Windows-$version.zip"
+          gh release view $version 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            $notes = "scripts/release-notes/$version.md"
+            if (Test-Path $notes) {
+              gh release create $version --title "ShotLens $version" --notes-file $notes
+            } else {
+              gh release create $version --title "ShotLens $version" --notes "ShotLens $version Windows release."
+            }
+          }
+          gh release upload $version $asset --clobber

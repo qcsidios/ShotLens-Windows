@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ShotLens.Windows.Core/ShotLens.Windows.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../../VERSION" Link="VERSION" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

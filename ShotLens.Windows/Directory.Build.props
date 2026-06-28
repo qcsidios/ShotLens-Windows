@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <ShotLensVersionWithPrefix>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\VERSION').Trim())</ShotLensVersionWithPrefix>
+    <ShotLensVersion>$([System.Text.RegularExpressions.Regex]::Replace('$(ShotLensVersionWithPrefix)', '^v', ''))</ShotLensVersion>
+    <Version>$(ShotLensVersion)</Version>
+    <InformationalVersion>$(ShotLensVersionWithPrefix)</InformationalVersion>
+    <AssemblyVersion>$(ShotLensVersion).0</AssemblyVersion>
+    <FileVersion>$(ShotLensVersion).0</FileVersion>
+    <Company>Qingcheng</Company>
+    <Product>ShotLens</Product>
+    <Copyright>MIT</Copyright>
+  </PropertyGroup>
+</Project>

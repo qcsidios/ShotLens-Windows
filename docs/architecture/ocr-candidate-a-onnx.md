@@ -71,18 +71,22 @@ dotnet run `
 
 ## 五、当前证据
 
-2026-06-29 在 macOS arm64 上完成了真实模型加载和 60 张同数据集预跑。
-该次预跑用于发现适配与计量问题，不替代 Windows x64 最终选型数据。
+2026-06-29 已在 GitHub Actions `windows-latest` 上完成 Windows x64
+正式基准，Run ID：`28370343526`。
 
 - 数据集 SHA-256：`dc9899044cbb30a0cce8d817cedc9fea512fed7bdb7ea0977f7a43eccd799b72`
 - 模型总大小：21.1 MiB
-- Worker `win-x64` framework-dependent 发布体积预估：71.3 MiB
+- Worker `win-x64` framework-dependent 发布体积：71.3 MiB
+- 峰值内存：1187.3 MiB
+- 启动耗时：296.8 ms
+- OCR P50：531.5 ms
+- OCR P95：956.0 ms
 - 总字符准确率：95.29%
 - 英文字符准确率：95.25%，未达到 97% 门槛
 - 中文字符准确率：93.52%，未达到 95% 门槛
 - 行召回率：96.30%
 - 整段漏识别：`en-018`、`zh-016`
 - 已确认候选 A 暂未达到选型门槛
-- Windows x64 指标以 CI 上传的 `ShotLens-OCR-ONNX-Report` 为准
+- 完整报告在 CI Artifact：`ShotLens-OCR-ONNX-Report`
 
 在候选 B 使用同一数据集并取得同机报告前，不作最终选择。

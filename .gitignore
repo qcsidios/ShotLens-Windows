@@ -4,6 +4,7 @@ bin/
 obj/
 .vs/
 .idea/
+.worktrees/
 *.user
 *.suo
 *.dSYM/

@@ -1,0 +1,80 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{780644FE-02AA-45AC-BCC5-15E799D8114B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.Core", "src\ShotLens.Windows.Core\ShotLens.Windows.Core.csproj", "{F35FA307-EA67-4895-8C3F-4BC298E8AF32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.Platform", "src\ShotLens.Windows.Platform\ShotLens.Windows.Platform.csproj", "{FD764C9F-F7F8-4591-A319-D613DB28D1CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.Ocr.Worker", "src\ShotLens.Windows.Ocr.Worker\ShotLens.Windows.Ocr.Worker.csproj", "{081CF973-3C3E-439E-B41F-D2F45A7153C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{177F93BD-03B6-4F97-B58A-E05E88CA33A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.Ocr.Benchmark", "tools\ShotLens.Windows.Ocr.Benchmark\ShotLens.Windows.Ocr.Benchmark.csproj", "{1F6B0AAF-D3F3-4F7A-832E-69E8576D84A6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E83632A4-21EC-4FE2-8B5F-97A4D09C0522}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.Core.Tests", "tests\ShotLens.Windows.Core.Tests\ShotLens.Windows.Core.Tests.csproj", "{969FF601-8F5A-4CD0-8918-4B71C4DAED51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.Platform.Tests", "tests\ShotLens.Windows.Platform.Tests\ShotLens.Windows.Platform.Tests.csproj", "{3021D919-996F-4232-9DBC-E9F75031972D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.Ocr.Tests", "tests\ShotLens.Windows.Ocr.Tests\ShotLens.Windows.Ocr.Tests.csproj", "{794DD6DC-9943-4D01-94A4-16DC9568F1CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShotLens.Windows.App", "src\ShotLens.Windows.App\ShotLens.Windows.App.csproj", "{C0F2A47B-0DCA-4EE9-B9A7-8902FD51C0E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F35FA307-EA67-4895-8C3F-4BC298E8AF32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F35FA307-EA67-4895-8C3F-4BC298E8AF32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F35FA307-EA67-4895-8C3F-4BC298E8AF32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F35FA307-EA67-4895-8C3F-4BC298E8AF32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD764C9F-F7F8-4591-A319-D613DB28D1CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD764C9F-F7F8-4591-A319-D613DB28D1CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD764C9F-F7F8-4591-A319-D613DB28D1CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD764C9F-F7F8-4591-A319-D613DB28D1CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{081CF973-3C3E-439E-B41F-D2F45A7153C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{081CF973-3C3E-439E-B41F-D2F45A7153C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{081CF973-3C3E-439E-B41F-D2F45A7153C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{081CF973-3C3E-439E-B41F-D2F45A7153C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F6B0AAF-D3F3-4F7A-832E-69E8576D84A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F6B0AAF-D3F3-4F7A-832E-69E8576D84A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F6B0AAF-D3F3-4F7A-832E-69E8576D84A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F6B0AAF-D3F3-4F7A-832E-69E8576D84A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{969FF601-8F5A-4CD0-8918-4B71C4DAED51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{969FF601-8F5A-4CD0-8918-4B71C4DAED51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{969FF601-8F5A-4CD0-8918-4B71C4DAED51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{969FF601-8F5A-4CD0-8918-4B71C4DAED51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3021D919-996F-4232-9DBC-E9F75031972D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3021D919-996F-4232-9DBC-E9F75031972D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3021D919-996F-4232-9DBC-E9F75031972D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3021D919-996F-4232-9DBC-E9F75031972D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{794DD6DC-9943-4D01-94A4-16DC9568F1CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{794DD6DC-9943-4D01-94A4-16DC9568F1CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{794DD6DC-9943-4D01-94A4-16DC9568F1CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{794DD6DC-9943-4D01-94A4-16DC9568F1CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0F2A47B-0DCA-4EE9-B9A7-8902FD51C0E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0F2A47B-0DCA-4EE9-B9A7-8902FD51C0E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0F2A47B-0DCA-4EE9-B9A7-8902FD51C0E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0F2A47B-0DCA-4EE9-B9A7-8902FD51C0E7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F35FA307-EA67-4895-8C3F-4BC298E8AF32} = {780644FE-02AA-45AC-BCC5-15E799D8114B}
+		{FD764C9F-F7F8-4591-A319-D613DB28D1CB} = {780644FE-02AA-45AC-BCC5-15E799D8114B}
+		{081CF973-3C3E-439E-B41F-D2F45A7153C7} = {780644FE-02AA-45AC-BCC5-15E799D8114B}
+		{1F6B0AAF-D3F3-4F7A-832E-69E8576D84A6} = {177F93BD-03B6-4F97-B58A-E05E88CA33A9}
+		{969FF601-8F5A-4CD0-8918-4B71C4DAED51} = {E83632A4-21EC-4FE2-8B5F-97A4D09C0522}
+		{3021D919-996F-4232-9DBC-E9F75031972D} = {E83632A4-21EC-4FE2-8B5F-97A4D09C0522}
+		{794DD6DC-9943-4D01-94A4-16DC9568F1CC} = {E83632A4-21EC-4FE2-8B5F-97A4D09C0522}
+		{C0F2A47B-0DCA-4EE9-B9A7-8902FD51C0E7} = {780644FE-02AA-45AC-BCC5-15E799D8114B}
+	EndGlobalSection
+EndGlobal

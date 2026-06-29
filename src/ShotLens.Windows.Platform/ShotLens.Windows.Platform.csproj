@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <UseWPF Condition="'$(OS)' == 'Windows_NT'">true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../ShotLens.Windows.Core/ShotLens.Windows.Core.csproj" />
-    <ProjectReference Include="../ShotLens.Windows.Platform/ShotLens.Windows.Platform.csproj" />
   </ItemGroup>
+
 </Project>

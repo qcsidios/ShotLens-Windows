@@ -63,7 +63,7 @@ dotnet run `
   build\ocr-benchmark\dataset `
   src\ShotLens.Windows.Ocr.Worker `
   build\ocr-benchmark\onnx-report `
-  build\ocr-benchmark\onnx-publish
+  build\ocr-benchmark\candidates-publish
 ```
 
 报告包含总指标、英文/中文/中英混合分项、冷启动、P50/P95、

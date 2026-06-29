@@ -9,7 +9,11 @@
     <ProjectReference Include="../ShotLens.Windows.Core/ShotLens.Windows.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="OpenCvSharp4.runtime.win" />
     <PackageReference Include="RapidOcrNet" ExcludeAssets="build" />
+    <PackageReference Include="Sdcb.PaddleInference.runtime.win64.mkl" />
+    <PackageReference Include="Sdcb.PaddleOCR" />
+    <PackageReference Include="Sdcb.PaddleOCR.Models.Local" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="models/onnx-paddleocr/**/*"

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using ShotLens.Windows.Core.Capture;
 using ShotLens.Windows.Core.Ocr;
 using ShotLens.Windows.Ocr.Worker.Onnx;
+using ShotLens.Windows.Ocr.Worker.PaddleSharp;
 
 try
 {
@@ -12,6 +13,11 @@ try
     {
         using var engine = new OnnxPaddleOcrEngine(
             AppContext.BaseDirectory);
+        response = engine.Recognize(request);
+    }
+    else if (request.Engine == OcrEngineIds.PaddleSharp)
+    {
+        using var engine = new PaddleSharpOcrEngine();
         response = engine.Recognize(request);
     }
     else if (request.Engine == OcrEngineIds.Fixture)

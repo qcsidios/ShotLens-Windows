@@ -6,13 +6,16 @@ var isDatasetCommand = args.Length == 2
     && args[0] is "generate" or "validate";
 var isOnnxRun = args.Length == 5
     && args[0] == "run-onnx";
-if (!isDatasetCommand && !isOnnxRun)
+var isPaddleSharpRun = args.Length == 5
+    && args[0] == "run-paddlesharp";
+if (!isDatasetCommand && !isOnnxRun && !isPaddleSharpRun)
 {
     Console.Error.WriteLine(
         """
         用法：
           ShotLens.Windows.Ocr.Benchmark generate|validate <数据集目录>
           ShotLens.Windows.Ocr.Benchmark run-onnx <数据集目录> <模型基准目录> <报告目录> <发布目录>
+          ShotLens.Windows.Ocr.Benchmark run-paddlesharp <数据集目录> <保留参数> <报告目录> <发布目录>
         """);
     return 2;
 }
@@ -24,6 +27,13 @@ try
         OnnxBenchmarkRunner.Run(
             Path.GetFullPath(args[1]),
             Path.GetFullPath(args[2]),
+            Path.GetFullPath(args[3]),
+            Path.GetFullPath(args[4]));
+    }
+    else if (isPaddleSharpRun)
+    {
+        PaddleSharpBenchmarkRunner.Run(
+            Path.GetFullPath(args[1]),
             Path.GetFullPath(args[3]),
             Path.GetFullPath(args[4]));
     }

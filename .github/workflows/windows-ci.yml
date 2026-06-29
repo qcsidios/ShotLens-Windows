@@ -31,7 +31,7 @@ jobs:
 
       - name: 锁定依赖还原
         shell: pwsh
-        run: dotnet restore ShotLens.Windows.sln --locked-mode
+        run: dotnet restore ShotLens.Windows.sln --locked-mode --disable-parallel
 
       - name: 下载并校验 ONNX OCR 模型
         shell: pwsh
@@ -41,6 +41,7 @@ jobs:
         shell: pwsh
         env:
           SHOTLENS_RUN_OCR_MODEL_TESTS: "1"
+          SHOTLENS_RUN_PADDLE_MODEL_TESTS: "1"
         run: dotnet test ShotLens.Windows.sln --configuration Release --no-restore
 
       - name: 构建 Solution
@@ -61,7 +62,7 @@ jobs:
             --no-build `
             -- validate build/ocr-benchmark/dataset
 
-      - name: 发布 ONNX OCR Worker
+      - name: 发布 OCR 候选 Worker
         shell: pwsh
         run: |
           dotnet publish `
@@ -69,7 +70,7 @@ jobs:
             --configuration Release `
             --runtime win-x64 `
             --self-contained false `
-            --output build/ocr-benchmark/onnx-publish
+            --output build/ocr-benchmark/candidates-publish
 
       - name: 运行 ONNX OCR 完整基准
         shell: pwsh
@@ -85,7 +86,23 @@ jobs:
             build/ocr-benchmark/dataset `
             src/ShotLens.Windows.Ocr.Worker `
             build/ocr-benchmark/onnx-report `
-            build/ocr-benchmark/onnx-publish
+            build/ocr-benchmark/candidates-publish
+
+      - name: 运行 PaddleSharp OCR 完整基准
+        shell: pwsh
+        env:
+          SHOTLENS_BENCHMARK_GPU: "GitHub Actions 未采集"
+          SHOTLENS_BENCHMARK_POWER_MODE: "GitHub Actions 托管环境"
+        run: |
+          dotnet run `
+            --project tools/ShotLens.Windows.Ocr.Benchmark/ShotLens.Windows.Ocr.Benchmark.csproj `
+            --configuration Release `
+            --no-build `
+            -- run-paddlesharp `
+            build/ocr-benchmark/dataset `
+            src/ShotLens.Windows.Ocr.Worker `
+            build/ocr-benchmark/paddlesharp-report `
+            build/ocr-benchmark/candidates-publish
 
       - name: 运行命令冒烟
         shell: pwsh
@@ -125,4 +142,11 @@ jobs:
         with:
           name: ShotLens-OCR-ONNX-Report
           path: build/ocr-benchmark/onnx-report
+          if-no-files-found: error
+
+      - name: 上传 PaddleSharp OCR 基准报告
+        uses: actions/upload-artifact@v7
+        with:
+          name: ShotLens-OCR-PaddleSharp-Report
+          path: build/ocr-benchmark/paddlesharp-report
           if-no-files-found: error

@@ -41,6 +41,20 @@ jobs:
         shell: pwsh
         run: dotnet build ShotLens.Windows.sln --configuration Release --no-restore
 
+      - name: 生成并校验 OCR 基准集
+        shell: pwsh
+        run: |
+          dotnet run `
+            --project tools/ShotLens.Windows.Ocr.Benchmark/ShotLens.Windows.Ocr.Benchmark.csproj `
+            --configuration Release `
+            --no-build `
+            -- generate build/ocr-benchmark/dataset
+          dotnet run `
+            --project tools/ShotLens.Windows.Ocr.Benchmark/ShotLens.Windows.Ocr.Benchmark.csproj `
+            --configuration Release `
+            --no-build `
+            -- validate build/ocr-benchmark/dataset
+
       - name: 运行命令冒烟
         shell: pwsh
         run: dotnet run --project src/ShotLens.Windows.App/ShotLens.Windows.App.csproj --configuration Release --no-build -- --smoke
@@ -65,4 +79,11 @@ jobs:
         with:
           name: ShotLens-Beta-${{ steps.version.outputs.value }}
           path: build/windows/ShotLens-Beta-${{ steps.version.outputs.value }}-Setup.exe
+          if-no-files-found: error
+
+      - name: 上传 OCR 生成基准
+        uses: actions/upload-artifact@v7
+        with:
+          name: ShotLens-OCR-Generated-Benchmark
+          path: build/ocr-benchmark/dataset
           if-no-files-found: error

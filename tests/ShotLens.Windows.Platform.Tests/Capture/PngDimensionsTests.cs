@@ -1,5 +1,5 @@
 using ShotLens.Windows.Core.Capture;
-using ShotLens.Windows.Platform.Capture;
+using ShotLens.Windows.Core.Imaging;
 
 namespace ShotLens.Windows.Platform.Tests.Capture;
 

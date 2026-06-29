@@ -1,7 +1,7 @@
 using System.Buffers.Binary;
 using ShotLens.Windows.Core.Capture;
 
-namespace ShotLens.Windows.Platform.Capture;
+namespace ShotLens.Windows.Core.Imaging;
 
 public static class PngDimensions
 {

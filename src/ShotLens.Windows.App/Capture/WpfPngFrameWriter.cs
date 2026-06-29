@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ShotLens.Windows.Core.Capture;
+using ShotLens.Windows.Core.Imaging;
 using ShotLens.Windows.Platform.Capture;
 
 namespace ShotLens.Windows.App.Capture;

@@ -18,7 +18,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SkiaSharp.NativeAssets.macOS"
-                      Condition="'$(OS)' != 'Windows_NT'"
                       PrivateAssets="all" />
   </ItemGroup>
 </Project>

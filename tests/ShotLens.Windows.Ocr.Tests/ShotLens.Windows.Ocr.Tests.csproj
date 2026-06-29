@@ -19,7 +19,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SkiaSharp.NativeAssets.macOS"
-                      Condition="'$(OS)' != 'Windows_NT'"
                       PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>

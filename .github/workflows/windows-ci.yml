@@ -18,10 +18,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: 检出代码
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 安装 .NET 8
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
 
@@ -61,7 +61,7 @@ jobs:
         run: ./scripts/build-windows.ps1 -Version "${{ steps.version.outputs.value }}" -SkipTests
 
       - name: 上传 beta 安装包
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ShotLens-Beta-${{ steps.version.outputs.value }}
           path: build/windows/ShotLens-Beta-${{ steps.version.outputs.value }}-Setup.exe

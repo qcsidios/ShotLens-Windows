@@ -1,0 +1,58 @@
+<Window x:Class="ShotLens.Windows.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ShotLens"
+        Width="460"
+        Height="330"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="White" Margin="28">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Image Source="Resources/ShotLens.png" Width="44" Height="44" Margin="0,0,14,0"/>
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="ShotLens" FontSize="24" FontWeight="SemiBold"/>
+                        <Border Background="#FEF3C7" CornerRadius="8" Margin="10,3,0,3" Padding="8,2">
+                            <TextBlock Text="测试版" Foreground="#92400E" FontSize="12"/>
+                        </Border>
+                    </StackPanel>
+                    <TextBlock x:Name="VersionText" Foreground="#64748B" Margin="0,3,0,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Border Background="{StaticResource CardBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="18"
+                    Margin="0,24,0,0">
+                <StackPanel>
+                    <TextBlock Text="阶段 0 更新诊断" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="StatusText"
+                               Text="准备检查测试版本。"
+                               Foreground="#475569"
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,16"/>
+                    <ProgressBar x:Name="DownloadProgress"
+                                 Height="6"
+                                 Minimum="0"
+                                 Maximum="1"
+                                 Visibility="Collapsed"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+                        <Button x:Name="CheckButton"
+                                Content="检测新版本"
+                                Padding="14,7"
+                                Click="CheckButton_Click"/>
+                        <Button x:Name="InstallButton"
+                                Content="升级"
+                                Padding="18,7"
+                                Margin="10,0,0,0"
+                                Visibility="Collapsed"
+                                Click="InstallButton_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>

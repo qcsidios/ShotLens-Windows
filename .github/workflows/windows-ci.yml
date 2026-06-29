@@ -1,0 +1,46 @@
+name: Windows CI
+
+on:
+  push:
+    branches:
+      - "codex/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: 锁定依赖还原
+        shell: pwsh
+        run: dotnet restore ShotLens.Windows.sln --locked-mode
+
+      - name: 运行测试
+        shell: pwsh
+        run: dotnet test ShotLens.Windows.sln --configuration Release --no-restore
+
+      - name: 构建 Solution
+        shell: pwsh
+        run: dotnet build ShotLens.Windows.sln --configuration Release --no-restore
+
+      - name: 运行命令冒烟
+        shell: pwsh
+        run: dotnet run --project src/ShotLens.Windows.App/ShotLens.Windows.App.csproj --configuration Release --no-build -- --smoke
+
+      - name: 运行窗口冒烟
+        shell: pwsh
+        run: dotnet run --project src/ShotLens.Windows.App/ShotLens.Windows.App.csproj --configuration Release --no-build -- --smoke-window

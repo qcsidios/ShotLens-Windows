@@ -3,9 +3,21 @@
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <UseWPF Condition="'$(OS)' == 'Windows_NT'">true</UseWPF>
+    <OutputType Condition="'$(OS)' == 'Windows_NT'">WinExe</OutputType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon Condition="'$(OS)' == 'Windows_NT'">Resources\ShotLens.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+    <Compile Remove="**/*.cs" />
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Remove="**/*.xaml" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../ShotLens.Windows.Core/ShotLens.Windows.Core.csproj" />
     <ProjectReference Include="../ShotLens.Windows.Platform/ShotLens.Windows.Platform.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../VERSION" Link="VERSION" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Resource Include="Resources\ShotLens.png" />
   </ItemGroup>
 </Project>

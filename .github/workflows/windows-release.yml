@@ -6,7 +6,7 @@ on:
       version:
         description: "Release version, must match VERSION"
         required: false
-        default: "v0.8.12"
+        default: "v0.1.5"
   push:
     tags:
       - "v*"
@@ -68,9 +68,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             $notes = "scripts/release-notes/$version.md"
             if (Test-Path $notes) {
-              gh release create $version --title "ShotLens $version" --notes-file $notes
+              gh release create $version --title "ShotLens Windows $version" --notes-file $notes
             } else {
-              gh release create $version --title "ShotLens $version" --notes "ShotLens $version Windows release."
+              gh release create $version --title "ShotLens Windows $version" --notes "ShotLens Windows $version release."
             }
           }
           $installer = "build/windows/ShotLens-Windows-$version-Setup.exe"

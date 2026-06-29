@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="../../../VERSION" Link="VERSION" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../VERSION" Link="VERSION" CopyToOutputDirectory="PreserveNewest" />
     <Resource Include="Resources\ShotLens.png" />
     <Content Include="Resources\ShotLens.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>

@@ -23,10 +23,10 @@ Remove-Item $buildDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item $publishDir -ItemType Directory -Force | Out-Null
 
 if (-not $SkipTests) {
-    dotnet run --project (Join-Path $root "ShotLens.Windows\tests\ShotLens.Windows.Core.Tests\ShotLens.Windows.Core.Tests.csproj") --configuration Release
+    dotnet run --project (Join-Path $root "tests\ShotLens.Windows.Core.Tests\ShotLens.Windows.Core.Tests.csproj") --configuration Release
 }
 
-dotnet publish (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\ShotLens.Windows.App.csproj") `
+dotnet publish (Join-Path $root "src\ShotLens.Windows.App\ShotLens.Windows.App.csproj") `
     --configuration Release `
     --runtime $Runtime `
     --self-contained true `
@@ -35,7 +35,7 @@ dotnet publish (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\ShotL
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:EnableCompressionInSingleFile=true
 
-Copy-Item (Join-Path $root "ShotLens.Windows\src\ShotLens.Windows.App\Resources\ShotLens.ico") $publishDir -Force
+Copy-Item (Join-Path $root "src\ShotLens.Windows.App\Resources\ShotLens.ico") $publishDir -Force
 
 $appExe = Join-Path $publishDir "ShotLens.Windows.App.exe"
 $smoke = Start-Process $appExe -ArgumentList "--smoke" -Wait -PassThru
@@ -63,7 +63,7 @@ if ($null -eq $iscc) {
 $env:SHOTLENS_VERSION = $Version
 $env:SHOTLENS_PUBLISH_DIR = $publishDir
 $env:SHOTLENS_INSTALLER_DIR = $buildDir
-& $iscc.Source (Join-Path $root "ShotLens.Windows\installer\ShotLens.iss")
+& $iscc.Source (Join-Path $root "installer\ShotLens.iss")
 if ($LASTEXITCODE -ne 0) {
     throw "Inno Setup compiler failed with exit code $LASTEXITCODE."
 }

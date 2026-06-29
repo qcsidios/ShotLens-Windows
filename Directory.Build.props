@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <ShotLensVersionWithPrefix>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\VERSION').Trim())</ShotLensVersionWithPrefix>
+    <ShotLensVersionWithPrefix>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)VERSION').Trim())</ShotLensVersionWithPrefix>
     <ShotLensVersion>$([System.Text.RegularExpressions.Regex]::Replace('$(ShotLensVersionWithPrefix)', '^v', ''))</ShotLensVersion>
     <Version>$(ShotLensVersion)</Version>
     <InformationalVersion>$(ShotLensVersionWithPrefix)</InformationalVersion>

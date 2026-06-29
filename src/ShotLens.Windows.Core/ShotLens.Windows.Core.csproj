@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="../../../VERSION" Link="VERSION" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../VERSION" Link="VERSION" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

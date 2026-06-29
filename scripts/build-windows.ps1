@@ -11,8 +11,8 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
     $Version = (Get-Content (Join-Path $root "VERSION") -Raw).Trim()
 }
 
-if ($Version -notmatch '^v\d+\.\d+\.\d+$') {
-    throw "Version must use three-part semver like v1.1.0, got: $Version"
+if ($Version -notmatch '^v\d+\.\d+\.\d+(?:-beta\.[1-9]\d*)?$') {
+    throw "Version must use v1.2.3 or v1.2.3-beta.1 format, got: $Version"
 }
 
 $buildDir = Join-Path $root "build\windows"

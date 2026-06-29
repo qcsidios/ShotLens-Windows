@@ -9,10 +9,11 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <ShotLensVersionWithPrefix>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)VERSION').Trim())</ShotLensVersionWithPrefix>
     <ShotLensVersion>$([System.Text.RegularExpressions.Regex]::Replace('$(ShotLensVersionWithPrefix)', '^v', ''))</ShotLensVersion>
+    <ShotLensNumericVersion>$([System.Text.RegularExpressions.Regex]::Replace('$(ShotLensVersion)', '-beta\.[1-9][0-9]*$', ''))</ShotLensNumericVersion>
     <Version>$(ShotLensVersion)</Version>
     <InformationalVersion>$(ShotLensVersionWithPrefix)</InformationalVersion>
-    <AssemblyVersion>$(ShotLensVersion).0</AssemblyVersion>
-    <FileVersion>$(ShotLensVersion).0</FileVersion>
+    <AssemblyVersion>$(ShotLensNumericVersion).0</AssemblyVersion>
+    <FileVersion>$(ShotLensNumericVersion).0</FileVersion>
     <Company>Qingcheng</Company>
     <Product>ShotLens</Product>
     <Copyright>MIT</Copyright>

@@ -50,6 +50,15 @@ if ($LASTEXITCODE -ne 0) {
     throw "Windows publish failed with exit code $LASTEXITCODE."
 }
 
+dotnet publish (Join-Path $root "src\ShotLens.Windows.Ocr.Worker\ShotLens.Windows.Ocr.Worker.csproj") `
+    --configuration Release `
+    --runtime $Runtime `
+    --self-contained true `
+    --output $publishDir
+if ($LASTEXITCODE -ne 0) {
+    throw "Windows OCR Worker publish failed with exit code $LASTEXITCODE."
+}
+
 Copy-Item (Join-Path $root "src\ShotLens.Windows.App\Resources\ShotLens.ico") $publishDir -Force
 
 $appExe = Join-Path $publishDir "ShotLens.Windows.App.exe"

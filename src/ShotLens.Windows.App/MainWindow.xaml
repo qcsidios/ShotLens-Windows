@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ShotLens"
         Width="460"
-        Height="330"
+        Height="560"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
     <Grid Background="White" Margin="28">
@@ -21,12 +21,33 @@
                 </StackPanel>
             </StackPanel>
 
+            <Border Background="#F7F3EA"
+                    BorderBrush="#DDD6C8"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="18"
+                    Margin="0,24,0,0">
+                <StackPanel>
+                    <TextBlock Text="截图翻译" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="WorkflowStatusText"
+                               Text="点击按钮后框选屏幕区域，ShotLens 会识别并翻译其中的文字。"
+                               Foreground="#475569"
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,16"/>
+                    <Button x:Name="CaptureButton"
+                            Content="开始截图翻译"
+                            Padding="18,8"
+                            HorizontalAlignment="Right"
+                            Click="CaptureButton_Click"/>
+                </StackPanel>
+            </Border>
+
             <Border Background="{StaticResource CardBrush}"
                     BorderBrush="{StaticResource BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="12"
                     Padding="18"
-                    Margin="0,24,0,0">
+                    Margin="0,16,0,0">
                 <StackPanel>
                     <TextBlock Text="阶段 0 更新诊断" FontSize="16" FontWeight="SemiBold"/>
                     <TextBlock x:Name="StatusText"

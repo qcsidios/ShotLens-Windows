@@ -1,9 +1,15 @@
 using System.IO;
 using System.Net.Http;
 using System.Windows;
+using ShotLens.Windows.App.Capture;
 using ShotLens.Windows.App.Updates;
+using ShotLens.Windows.App.Workflow;
+using ShotLens.Windows.Core;
+using ShotLens.Windows.Core.Settings;
+using ShotLens.Windows.Core.Translation;
 using ShotLens.Windows.Core.Updates;
 using ShotLens.Windows.Core.Versioning;
+using ShotLens.Windows.Platform.Ocr;
 using ShotLens.Windows.Platform.Updates;
 
 namespace ShotLens.Windows.App;
@@ -11,6 +17,8 @@ namespace ShotLens.Windows.App;
 public partial class MainWindow : Window
 {
     private readonly UpdateCoordinator coordinator;
+    private readonly CaptureTranslateWorkflow workflow;
+    private bool isCapturing;
 
     public MainWindow()
     {
@@ -26,8 +34,50 @@ public partial class MainWindow : Window
                 new HttpClient(),
                 Path.Combine(Path.GetTempPath(), "ShotLens", "Updates")),
             new InstallerLauncher(new SystemProcessLauncher()));
+        workflow = new CaptureTranslateWorkflow(
+            new SelectionCaptureService(new DesktopCaptureService()),
+            new OcrWorkerClient(
+                new SystemOcrWorkerProcessFactory(),
+                Path.Combine(
+                    AppContext.BaseDirectory,
+                    "ShotLens.Windows.Ocr.Worker.exe"),
+                Path.Combine(Path.GetTempPath(), "ShotLens", "Ocr")),
+            new TranslationService(new HttpClient()),
+            new SettingsStore(SettingsPath()),
+            () => Environment.GetEnvironmentVariable(
+                "SHOTLENS_DEFAULT_API_KEY"));
         coordinator.StateChanged += RenderState;
         RenderState(coordinator.State);
+    }
+
+    private async void CaptureButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (isCapturing)
+        {
+            return;
+        }
+
+        isCapturing = true;
+        CaptureButton.IsEnabled = false;
+        try
+        {
+            Hide();
+            await Task.Delay(160);
+            await workflow.RunAsync(
+                message => WorkflowStatusText.Text = message,
+                CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            WorkflowStatusText.Text = $"截图翻译失败：{exception.Message}";
+        }
+        finally
+        {
+            Show();
+            Activate();
+            CaptureButton.IsEnabled = true;
+            isCapturing = false;
+        }
     }
 
     private async void CheckButton_Click(object sender, RoutedEventArgs e) =>
@@ -66,4 +116,11 @@ public partial class MainWindow : Window
             _ => "未知状态。"
         };
     }
+
+    private static string SettingsPath() =>
+        Path.Combine(
+            Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData),
+            ProductIdentity.StableSettingsDirectoryName,
+            "settings.json");
 }

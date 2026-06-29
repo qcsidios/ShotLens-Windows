@@ -42,7 +42,7 @@ public partial class App : Application
 
         if (e.Args.Contains("--smoke-window", StringComparer.Ordinal))
         {
-            Dispatcher.BeginInvoke(
+            _ = Dispatcher.BeginInvoke(
                 DispatcherPriority.ApplicationIdle,
                 () =>
                 {

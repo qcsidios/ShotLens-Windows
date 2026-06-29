@@ -57,6 +57,19 @@
 
 ## 四、DXGI 诊断
 
+安装 beta 后，在仓库根目录运行：
+
+```powershell
+.\scripts\run-dxgi-diagnostics.ps1
+```
+
+默认输出到桌面的 `ShotLens-DXGI-时间戳`。如安装位置不同：
+
+```powershell
+.\scripts\run-dxgi-diagnostics.ps1 `
+  -ExecutablePath "D:\ShotLens Beta\ShotLens.Windows.App.exe"
+```
+
 - [ ] 每台显示器生成一张 PNG。
 - [ ] PNG 尺寸等于显示器物理像素。
 - [ ] Manifest 记录正确的桌面坐标。

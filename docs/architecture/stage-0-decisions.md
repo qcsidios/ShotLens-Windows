@@ -76,3 +76,22 @@ Expected 0.8.12, got 0.1.5.
 ```
 
 同一测试先要求 `VersionInfo.Current == "v0.1.5"`，又要求 `VersionInfo.SemVer == "0.8.12"`，属于仓库拆分后的既有矛盾。阶段 0 将删除并重建旧测试，不对旧实现打补丁。
+
+## 八、DXGI 托管依赖
+
+- 锁定 `Vortice.Direct3D11` `3.8.3` 与 `Vortice.DXGI` `3.8.3`。
+- 两个包均提供 .NET 8 目标并采用 MIT 许可。
+- Windows 目标保持 `net8.0-windows10.0.19041.0`。
+- 每个 DXGI output 独立创建 Desktop Duplication 会话。
+- 取帧超时为 500 ms；`DXGI_ERROR_ACCESS_LOST` 仅重建一次。
+- 原始帧必须为 `B8G8R8A8_UNorm`，不合成鼠标，不缩放。
+- 竖屏帧只做 90/180/270 度像素重排，输出尺寸必须等于显示器物理尺寸。
+
+一手依据：
+
+- [Vortice.Direct3D11 3.8.3 NuGet 页面](https://www.nuget.org/packages/Vortice.Direct3D11/3.8.3)
+- [Vortice.DXGI 3.8.3 NuGet 页面](https://www.nuget.org/packages/Vortice.DXGI/3.8.3)
+- [Vortice.Windows MIT 许可](https://github.com/amerkoleci/Vortice.Windows/blob/main/LICENSE)
+- [微软 Desktop Duplication API](https://learn.microsoft.com/windows/win32/direct3ddxgi/desktop-dup-api)
+- [微软 IDXGIOutput1::DuplicateOutput](https://learn.microsoft.com/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgioutput1-duplicateoutput)
+- [微软 IDXGIOutputDuplication::AcquireNextFrame](https://learn.microsoft.com/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgioutputduplication-acquirenextframe)

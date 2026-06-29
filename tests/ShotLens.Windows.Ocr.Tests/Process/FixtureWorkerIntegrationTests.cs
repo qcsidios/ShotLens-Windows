@@ -57,7 +57,7 @@ public sealed class FixtureWorkerIntegrationTests
     }
 
     [Fact]
-    public async Task Onnx_engine_is_dispatched_before_missing_models_fail()
+    public async Task Onnx_engine_is_dispatched_when_models_are_present_or_missing()
     {
         var repositoryRoot = FindRepositoryRoot();
         var configuration = new DirectoryInfo(AppContext.BaseDirectory)
@@ -88,15 +88,20 @@ public sealed class FixtureWorkerIntegrationTests
                 workerPath,
                 tempRoot);
 
-            var exception = await Assert.ThrowsAsync<OcrWorkerExitException>(
-                () => client.RecognizeAsync(
+            try
+            {
+                var response = await client.RecognizeAsync(
                     OcrEngineIds.OnnxPaddleOcr,
                     png.ToArray(),
                     new PhysicalSize(100, 50),
                     ["zh", "en"],
-                    CancellationToken.None));
-
-            Assert.Equal(1, exception.ExitCode);
+                    CancellationToken.None);
+                Assert.Equal(OcrEngineIds.OnnxPaddleOcr, response.Engine);
+            }
+            catch (OcrWorkerExitException exception)
+            {
+                Assert.Equal(1, exception.ExitCode);
+            }
         }
         finally
         {

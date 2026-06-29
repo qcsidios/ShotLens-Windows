@@ -18,11 +18,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="SkiaSharp.NativeAssets.macOS"
+                      Condition="'$(OS)' != 'Windows_NT'"
+                      PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/ShotLens.Windows.Core/ShotLens.Windows.Core.csproj" />
     <ProjectReference Include="../../src/ShotLens.Windows.Platform/ShotLens.Windows.Platform.csproj" />
-    <ProjectReference Include="../../src/ShotLens.Windows.Ocr.Worker/ShotLens.Windows.Ocr.Worker.csproj"
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../../src/ShotLens.Windows.Ocr.Worker/ShotLens.Windows.Ocr.Worker.csproj" />
   </ItemGroup>
 </Project>

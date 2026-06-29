@@ -8,3 +8,4 @@ obj/
 *.user
 *.suo
 *.dSYM/
+src/ShotLens.Windows.Ocr.Worker/models/onnx-paddleocr/

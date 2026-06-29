@@ -29,6 +29,11 @@ public static class OcrBenchmarkReportWriter
         var missedParagraphs = report.MissedParagraphSampleIds.Length == 0
             ? "无"
             : string.Join("、", report.MissedParagraphSampleIds);
+        var languages = string.Join(
+            Environment.NewLine,
+            report.LanguageMetrics.Select(
+                metric =>
+                    $"- {Language(metric.Language)}（{metric.SampleCount} 张）：字符准确率 {Percent(metric.CharacterAccuracy)}，行召回率 {Percent(metric.LineRecall)}，顺序 {Percent(metric.ReadingOrderAccuracy)}"));
         return $"""
             # ShotLens OCR 基准报告
 
@@ -48,6 +53,10 @@ public static class OcrBenchmarkReportWriter
             - 行召回率：{Percent(report.LineRecall)}
             - 阅读顺序准确率：{Percent(report.ReadingOrderAccuracy)}
             - 整段漏识别样本：{missedParagraphs}
+
+            ## 分语言结果
+
+            {languages}
 
             ## 性能与体积
 
@@ -75,4 +84,13 @@ public static class OcrBenchmarkReportWriter
 
     private static double Mebibytes(long bytes) =>
         bytes / 1024d / 1024d;
+
+    private static string Language(OcrBenchmarkLanguage language) =>
+        language switch
+        {
+            OcrBenchmarkLanguage.English => "英文",
+            OcrBenchmarkLanguage.Chinese => "中文",
+            OcrBenchmarkLanguage.Mixed => "中英混合",
+            _ => language.ToString()
+        };
 }

@@ -49,6 +49,21 @@ public sealed class OcrBenchmarkScorerTests
         Assert.Equal(["two"], result.MissingLines);
     }
 
+    [Theory]
+    [InlineData("ShotLens Settings", "Shotlens Settings")]
+    [InlineData("API 连接测试", "API连接测试")]
+    public void Minor_ocr_or_whitespace_difference_still_recalls_the_line(
+        string expected,
+        string actual)
+    {
+        var result = OcrBenchmarkScorer.Score(
+            [expected],
+            [Block(actual, 0)]);
+
+        Assert.Equal(1, result.LineRecall);
+        Assert.Empty(result.MissingLines);
+    }
+
     [Fact]
     public void Swapped_lines_use_pairwise_reading_order_accuracy()
     {

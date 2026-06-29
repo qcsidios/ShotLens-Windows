@@ -46,25 +46,47 @@ public static class OcrBenchmarkScorer
              expectedIndex < expectedLines.Count;
              expectedIndex++)
         {
+            var expected = NormalizeLine(expectedLines[expectedIndex]);
+            var bestSimilarity = 0d;
+            int? bestIndex = null;
             for (var actualIndex = 0;
                  actualIndex < actualBlocks.Count;
                  actualIndex++)
             {
-                if (!used.Contains(actualIndex)
-                    && string.Equals(
-                        expectedLines[expectedIndex],
-                        actualBlocks[actualIndex].Text,
-                        StringComparison.Ordinal))
+                if (used.Contains(actualIndex))
                 {
-                    used.Add(actualIndex);
-                    matches[expectedIndex] = actualIndex;
-                    break;
+                    continue;
                 }
+
+                var actual = NormalizeLine(actualBlocks[actualIndex].Text);
+                var length = Math.Max(expected.Length, actual.Length);
+                var similarity = length == 0
+                    ? 1
+                    : 1 - (double)LevenshteinDistance(expected, actual)
+                        / length;
+                if (similarity > bestSimilarity)
+                {
+                    bestSimilarity = similarity;
+                    bestIndex = actualIndex;
+                }
+            }
+
+            if (bestIndex is not null && bestSimilarity >= 0.5)
+            {
+                used.Add(bestIndex.Value);
+                matches[expectedIndex] = bestIndex;
             }
         }
 
         return matches;
     }
+
+    private static string NormalizeLine(string value) =>
+        new(
+            value
+                .Where(character => !char.IsWhiteSpace(character))
+                .Select(char.ToLowerInvariant)
+                .ToArray());
 
     private static double PairwiseOrderAccuracy(int?[] matches)
     {

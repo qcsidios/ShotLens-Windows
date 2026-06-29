@@ -22,6 +22,14 @@ public sealed class OcrBenchmarkReportWriterTests : IDisposable
             0.98,
             0.96,
             0.95,
+            [
+                new OcrBenchmarkLanguageMetric(
+                    OcrBenchmarkLanguage.English,
+                    30,
+                    0.99,
+                    0.97,
+                    1)
+            ],
             120,
             40,
             60,
@@ -48,6 +56,8 @@ public sealed class OcrBenchmarkReportWriterTests : IDisposable
             60,
             json.RootElement.GetProperty("sampleCount").GetInt32());
         Assert.Contains("## 准确率", markdown);
+        Assert.Contains("## 分语言结果", markdown);
+        Assert.Contains("英文（30 张）", markdown);
         Assert.Contains("生成基准，不代表完整真实用户场景", markdown);
         Assert.Contains("mixed-003", markdown);
     }

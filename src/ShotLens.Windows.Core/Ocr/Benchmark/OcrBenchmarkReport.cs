@@ -11,6 +11,7 @@ public sealed record OcrBenchmarkReport(
     double CharacterAccuracy,
     double LineRecall,
     double ReadingOrderAccuracy,
+    OcrBenchmarkLanguageMetric[] LanguageMetrics,
     double StartupMilliseconds,
     double MedianOcrMilliseconds,
     double P95OcrMilliseconds,
@@ -20,6 +21,13 @@ public sealed record OcrBenchmarkReport(
     long ModelSizeBytes,
     OcrBenchmarkMachine Machine,
     string[] MissedParagraphSampleIds);
+
+public sealed record OcrBenchmarkLanguageMetric(
+    OcrBenchmarkLanguage Language,
+    int SampleCount,
+    double CharacterAccuracy,
+    double LineRecall,
+    double ReadingOrderAccuracy);
 
 public sealed record OcrBenchmarkMachine(
     string WindowsVersion,

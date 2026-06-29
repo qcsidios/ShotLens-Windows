@@ -8,4 +8,12 @@
   <ItemGroup>
     <ProjectReference Include="../ShotLens.Windows.Core/ShotLens.Windows.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="RapidOcrNet" ExcludeAssets="build" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="models/onnx-paddleocr/**/*"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

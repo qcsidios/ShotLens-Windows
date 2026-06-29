@@ -1,6 +1,7 @@
 using ShotLens.Windows.Core.Capture;
 using ShotLens.Windows.Core.Ocr;
 using ShotLens.Windows.Platform.Ocr;
+using SkiaSharp;
 
 namespace ShotLens.Windows.Ocr.Tests.Process;
 
@@ -45,6 +46,57 @@ public sealed class FixtureWorkerIntegrationTests
             Assert.Equal("fixture-1", response.EngineVersion);
             Assert.Single(response.Blocks);
             Assert.Equal("Fixture", response.Blocks[0].Text);
+        }
+        finally
+        {
+            if (Directory.Exists(tempRoot))
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task Onnx_engine_is_dispatched_before_missing_models_fail()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var configuration = new DirectoryInfo(AppContext.BaseDirectory)
+            .Parent!
+            .Name;
+        var executableName = OperatingSystem.IsWindows()
+            ? "ShotLens.Windows.Ocr.Worker.exe"
+            : "ShotLens.Windows.Ocr.Worker";
+        var workerPath = Path.Combine(
+            repositoryRoot,
+            "src",
+            "ShotLens.Windows.Ocr.Worker",
+            "bin",
+            configuration,
+            "net8.0-windows10.0.19041.0",
+            executableName);
+        var tempRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"shotlens-onnx-process-{Guid.NewGuid():N}");
+        using var bitmap = new SKBitmap(100, 50);
+        bitmap.Erase(SKColors.White);
+        using var image = SKImage.FromBitmap(bitmap);
+        using var png = image.Encode(SKEncodedImageFormat.Png, 100);
+        try
+        {
+            var client = new OcrWorkerClient(
+                new SystemOcrWorkerProcessFactory(),
+                workerPath,
+                tempRoot);
+
+            var exception = await Assert.ThrowsAsync<OcrWorkerExitException>(
+                () => client.RecognizeAsync(
+                    OcrEngineIds.OnnxPaddleOcr,
+                    png.ToArray(),
+                    new PhysicalSize(100, 50),
+                    ["zh", "en"],
+                    CancellationToken.None));
+
+            Assert.Equal(1, exception.ExitCode);
         }
         finally
         {

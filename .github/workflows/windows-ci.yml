@@ -33,8 +33,14 @@ jobs:
         shell: pwsh
         run: dotnet restore ShotLens.Windows.sln --locked-mode
 
+      - name: 下载并校验 ONNX OCR 模型
+        shell: pwsh
+        run: ./scripts/download-onnx-ocr-models.ps1
+
       - name: 运行测试
         shell: pwsh
+        env:
+          SHOTLENS_RUN_OCR_MODEL_TESTS: "1"
         run: dotnet test ShotLens.Windows.sln --configuration Release --no-restore
 
       - name: 构建 Solution
@@ -54,6 +60,32 @@ jobs:
             --configuration Release `
             --no-build `
             -- validate build/ocr-benchmark/dataset
+
+      - name: 发布 ONNX OCR Worker
+        shell: pwsh
+        run: |
+          dotnet publish `
+            src/ShotLens.Windows.Ocr.Worker/ShotLens.Windows.Ocr.Worker.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained false `
+            --output build/ocr-benchmark/onnx-publish
+
+      - name: 运行 ONNX OCR 完整基准
+        shell: pwsh
+        env:
+          SHOTLENS_BENCHMARK_GPU: "GitHub Actions 未采集"
+          SHOTLENS_BENCHMARK_POWER_MODE: "GitHub Actions 托管环境"
+        run: |
+          dotnet run `
+            --project tools/ShotLens.Windows.Ocr.Benchmark/ShotLens.Windows.Ocr.Benchmark.csproj `
+            --configuration Release `
+            --no-build `
+            -- run-onnx `
+            build/ocr-benchmark/dataset `
+            src/ShotLens.Windows.Ocr.Worker `
+            build/ocr-benchmark/onnx-report `
+            build/ocr-benchmark/onnx-publish
 
       - name: 运行命令冒烟
         shell: pwsh
@@ -86,4 +118,11 @@ jobs:
         with:
           name: ShotLens-OCR-Generated-Benchmark
           path: build/ocr-benchmark/dataset
+          if-no-files-found: error
+
+      - name: 上传 ONNX OCR 基准报告
+        uses: actions/upload-artifact@v7
+        with:
+          name: ShotLens-OCR-ONNX-Report
+          path: build/ocr-benchmark/onnx-report
           if-no-files-found: error

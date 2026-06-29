@@ -17,13 +17,25 @@ if ($Version -notmatch '^v\d+\.\d+\.\d+(?:-beta\.[1-9]\d*)?$') {
 
 $buildDir = Join-Path $root "build\windows"
 $publishDir = Join-Path $buildDir "publish"
-$installerPath = Join-Path $buildDir "ShotLens-Windows-$Version-Setup.exe"
+$channel = if ($Version -match '-beta\.') { "beta" } else { "stable" }
+$installerPrefix = if ($channel -eq "beta") { "ShotLens-Beta" } else { "ShotLens-Windows" }
+$installerPath = Join-Path $buildDir "$installerPrefix-$Version-Setup.exe"
 
 Remove-Item $buildDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item $publishDir -ItemType Directory -Force | Out-Null
 
 if (-not $SkipTests) {
-    dotnet run --project (Join-Path $root "tests\ShotLens.Windows.Core.Tests\ShotLens.Windows.Core.Tests.csproj") --configuration Release
+    dotnet restore (Join-Path $root "ShotLens.Windows.sln") --locked-mode
+    if ($LASTEXITCODE -ne 0) {
+        throw "Locked dependency restore failed with exit code $LASTEXITCODE."
+    }
+
+    dotnet test (Join-Path $root "ShotLens.Windows.sln") `
+        --configuration Release `
+        --no-restore
+    if ($LASTEXITCODE -ne 0) {
+        throw "Tests failed with exit code $LASTEXITCODE."
+    }
 }
 
 dotnet publish (Join-Path $root "src\ShotLens.Windows.App\ShotLens.Windows.App.csproj") `
@@ -34,6 +46,9 @@ dotnet publish (Join-Path $root "src\ShotLens.Windows.App\ShotLens.Windows.App.c
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:EnableCompressionInSingleFile=true
+if ($LASTEXITCODE -ne 0) {
+    throw "Windows publish failed with exit code $LASTEXITCODE."
+}
 
 Copy-Item (Join-Path $root "src\ShotLens.Windows.App\Resources\ShotLens.ico") $publishDir -Force
 
@@ -61,6 +76,7 @@ if ($null -eq $iscc) {
 }
 
 $env:SHOTLENS_VERSION = $Version
+$env:SHOTLENS_CHANNEL = $channel
 $env:SHOTLENS_PUBLISH_DIR = $publishDir
 $env:SHOTLENS_INSTALLER_DIR = $buildDir
 & $iscc.Source (Join-Path $root "installer\ShotLens.iss")
@@ -72,4 +88,11 @@ if (-not (Test-Path $installerPath)) {
     throw "Expected installer was not created: $installerPath"
 }
 
-Write-Output $installerPath
+$installerInfo = Get-Item $installerPath
+if ($installerInfo.Length -le 0) {
+    throw "Installer is empty: $installerPath"
+}
+
+$hash = (Get-FileHash $installerPath -Algorithm SHA256).Hash.ToLowerInvariant()
+Write-Output "Installer: $installerPath"
+Write-Output "SHA256: $hash"

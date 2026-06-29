@@ -15,7 +15,7 @@ static class VersionInfoTests
 {
     public static Task ReadsSharedRootVersion()
     {
-        Assert.Equal("v0.8.11", VersionInfo.Current);
+        Assert.Equal("v0.1.4", VersionInfo.Current);
         Assert.Equal("0.8.11", VersionInfo.SemVer);
         return Task.CompletedTask;
     }

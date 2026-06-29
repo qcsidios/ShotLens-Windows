@@ -108,3 +108,26 @@ PNG：
 ```text
 待填写
 ```
+
+## 七、v0.2.0-beta.1 基础可用版 CI 安装包证据
+
+- CI Run：`28384906746`
+- Commit：`a20b7ea76f9ba9354f5bd5d7bc3c2b276da0cb80`
+- 结果：Windows CI 全部通过。
+- 已验证步骤：
+  - 锁定依赖还原；
+  - Solution 测试；
+  - Solution 构建；
+  - OCR 生成数据集；
+  - ONNX OCR 完整基准；
+  - PaddleSharp OCR 完整基准；
+  - 命令冒烟；
+  - 窗口冒烟；
+  - beta 安装包构建；
+  - beta 安装包 Artifact 上传。
+- 安装包 Artifact：`ShotLens-Beta-v0.2.0-beta.1`
+- 本地下载路径：`/tmp/shotlens-fast-a20b7ea/ShotLens-Beta-v0.2.0-beta.1-Setup.exe`
+- 文件大小：218 MiB
+- SHA-256：`e44729f4cfa3e544f6ef68604e725e0461b3e8064246cadb90a6096ca4582389`
+
+说明：这是按“基础可用版”策略生成的安装包。它优先保证主界面、应用内升级管线、截图框选、PaddleSharp OCR、硅基流动翻译配置、结果窗口和复制能力闭环。OCR 精度优化、安装包体积优化、全量快捷键/托盘体验和 DXGI 正式选择窗留到后续应用内升级版本继续补。

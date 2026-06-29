@@ -7,7 +7,7 @@ using ShotLens.Windows.Platform.Capture;
 
 namespace ShotLens.Windows.App;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     protected override async void OnStartup(StartupEventArgs e)
     {

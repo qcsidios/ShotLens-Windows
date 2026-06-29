@@ -87,7 +87,7 @@ public partial class MainWindow : Window
     {
         if (await coordinator.InstallAsync())
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
     }
 

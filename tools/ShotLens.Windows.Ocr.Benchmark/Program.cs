@@ -1,3 +1,4 @@
+using System.IO;
 using ShotLens.Windows.Core.Ocr.Benchmark;
 using ShotLens.Windows.Ocr.Benchmark;
 

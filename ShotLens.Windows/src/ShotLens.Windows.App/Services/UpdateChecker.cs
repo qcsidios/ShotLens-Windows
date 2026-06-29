@@ -10,7 +10,7 @@ public sealed record UpdateCheckResult(bool HasUpdate, string Message, string? R
 
 public sealed class UpdateChecker
 {
-    private static readonly Uri ReleasesUri = new("https://api.github.com/repos/qcsidios/ShotLens/releases?per_page=30");
+    private static readonly Uri ReleasesUri = new("https://api.github.com/repos/qcsidios/ShotLens-Windows/releases?per_page=30");
     private readonly HttpClient httpClient;
 
     public UpdateChecker(HttpClient? httpClient = null)

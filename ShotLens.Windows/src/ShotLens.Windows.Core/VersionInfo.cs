@@ -23,7 +23,7 @@ public static class VersionInfo
             }
         }
 
-        return "v0.8.8";
+        return "v0.1.1";
     }
 
     private static IEnumerable<string> CandidateDirectories()

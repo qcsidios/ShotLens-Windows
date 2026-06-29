@@ -19,7 +19,7 @@ public partial class ResultWindow : Window
     {
         if (!string.IsNullOrWhiteSpace(TranslatedText.Text))
         {
-            Clipboard.SetText(TranslatedText.Text);
+            System.Windows.Clipboard.SetText(TranslatedText.Text);
         }
     }
 

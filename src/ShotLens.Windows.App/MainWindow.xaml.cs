@@ -2,6 +2,7 @@ using System.IO;
 using System.Net.Http;
 using System.Windows;
 using ShotLens.Windows.App.Capture;
+using ShotLens.Windows.App.Configuration;
 using ShotLens.Windows.App.Updates;
 using ShotLens.Windows.App.Workflow;
 using ShotLens.Windows.Core;
@@ -18,6 +19,7 @@ public partial class MainWindow : Window
 {
     private readonly UpdateCoordinator coordinator;
     private readonly CaptureTranslateWorkflow workflow;
+    private readonly SettingsStore settingsStore;
     private bool isCapturing;
 
     public MainWindow()
@@ -25,6 +27,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         var version = ProductVersion.Load(Path.Combine(AppContext.BaseDirectory, "VERSION"));
         VersionText.Text = $"版本 {version} · beta 通道";
+        settingsStore = new SettingsStore(SettingsPath());
 
         coordinator = new UpdateCoordinator(
             version,
@@ -43,11 +46,11 @@ public partial class MainWindow : Window
                     "ShotLens.Windows.Ocr.Worker.exe"),
                 Path.Combine(Path.GetTempPath(), "ShotLens", "Ocr")),
             new TranslationService(new HttpClient()),
-            new SettingsStore(SettingsPath()),
-            () => Environment.GetEnvironmentVariable(
-                "SHOTLENS_DEFAULT_API_KEY"));
+            settingsStore,
+            DefaultApiKeyProvider.Load);
         coordinator.StateChanged += RenderState;
         RenderState(coordinator.State);
+        RenderSettings(settingsStore.Load());
     }
 
     private async void CaptureButton_Click(object sender, RoutedEventArgs e)
@@ -82,6 +85,28 @@ public partial class MainWindow : Window
 
     private async void CheckButton_Click(object sender, RoutedEventArgs e) =>
         await coordinator.CheckAsync();
+
+    private void SaveApiButton_Click(object sender, RoutedEventArgs e)
+    {
+        var apiMode = CustomApiRadio.IsChecked == true
+            ? ApiCredentialMode.Custom
+            : DisabledApiRadio.IsChecked == true
+                ? ApiCredentialMode.Disabled
+                : ApiCredentialMode.DefaultFree;
+        var settings = settingsStore.Load() with
+        {
+            Api = ApiConfiguration.Default with
+            {
+                Mode = apiMode,
+                UserApiKey = string.IsNullOrWhiteSpace(UserApiKeyBox.Password)
+                    ? null
+                    : UserApiKeyBox.Password.Trim()
+            }
+        };
+        settingsStore.Save(settings);
+        RenderSettings(settings);
+        WorkflowStatusText.Text = "API 设置已保存。";
+    }
 
     private async void InstallButton_Click(object sender, RoutedEventArgs e)
     {
@@ -123,4 +148,18 @@ public partial class MainWindow : Window
                 Environment.SpecialFolder.ApplicationData),
             ProductIdentity.StableSettingsDirectoryName,
             "settings.json");
+
+    private void RenderSettings(AppSettings settings)
+    {
+        DefaultApiRadio.IsChecked = settings.Api.Mode
+            == ApiCredentialMode.DefaultFree;
+        CustomApiRadio.IsChecked = settings.Api.Mode
+            == ApiCredentialMode.Custom;
+        DisabledApiRadio.IsChecked = settings.Api.Mode
+            == ApiCredentialMode.Disabled;
+        UserApiKeyBox.Password = settings.Api.UserApiKey ?? "";
+        ApiStatusText.Text = DefaultApiKeyProvider.Load() is null
+            ? "当前安装包未注入默认 Key；请填写自定义 Key 后使用。"
+            : "默认限免 Key 已随安装包配置。";
+    }
 }

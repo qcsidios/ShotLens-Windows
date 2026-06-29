@@ -61,6 +61,14 @@ if ($LASTEXITCODE -ne 0) {
 
 Copy-Item (Join-Path $root "src\ShotLens.Windows.App\Resources\ShotLens.ico") $publishDir -Force
 
+if (-not [string]::IsNullOrWhiteSpace($env:SHOTLENS_DEFAULT_API_KEY)) {
+    Set-Content `
+        -Path (Join-Path $publishDir "default-api-key.txt") `
+        -Value $env:SHOTLENS_DEFAULT_API_KEY `
+        -NoNewline `
+        -Encoding utf8
+}
+
 $appExe = Join-Path $publishDir "ShotLens.Windows.App.exe"
 $smoke = Start-Process $appExe -ArgumentList "--smoke" -Wait -PassThru
 if ($smoke.ExitCode -ne 0) {

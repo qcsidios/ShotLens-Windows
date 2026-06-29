@@ -121,6 +121,8 @@ jobs:
 
       - name: 构建 beta 安装包
         shell: pwsh
+        env:
+          SHOTLENS_DEFAULT_API_KEY: ${{ secrets.SHOTLENS_DEFAULT_API_KEY }}
         run: ./scripts/build-windows.ps1 -Version "${{ steps.version.outputs.value }}" -SkipTests
 
       - name: 上传 beta 安装包

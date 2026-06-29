@@ -292,7 +292,7 @@ public enum UpdateChannel { Stable, Beta }
 - 正式版本使用 Stable，忽略 Draft 和 Pre-release。
 - beta 使用 Beta，可发现更高 beta 和正式版。
 - Stable 只认 `ShotLens-Windows-{tag}-Setup.exe`。
-- Beta 只认 `ShotLens-Beta-{tag}-Setup.exe`。
+- Beta 对 Pre-release 只认 `ShotLens-Beta-{tag}-Setup.exe`；发现更高正式版时只认稳定资产 `ShotLens-Windows-{tag}-Setup.exe`。
 - beta.1 由用户首次手动安装；旧版稳定更新器无法识别 beta 资产名。
 - beta.1 之后由 beta 通道应用内覆盖升级。
 - 接近正式版时单独验证 v0.1.5 到稳定候选版。

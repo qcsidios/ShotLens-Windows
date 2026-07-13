@@ -17,6 +17,7 @@ public sealed record UpdateCheckResult(
 public sealed class UpdateChecker
 {
     private static readonly Uri ReleasesUri = new("https://api.github.com/repos/qcsidios/ShotLens-Windows/releases?per_page=30");
+    private static readonly Uri LatestReleaseUri = new("https://github.com/qcsidios/ShotLens-Windows/releases/latest");
     private readonly HttpClient httpClient;
 
     public UpdateChecker(HttpClient? httpClient = null)
@@ -30,9 +31,7 @@ public sealed class UpdateChecker
 
     public async Task<UpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
     {
-        var body = await httpClient.GetStringAsync(ReleasesUri, cancellationToken);
-        using var document = JsonDocument.Parse(body);
-        var release = FindLatestWindowsRelease(document.RootElement);
+        var release = await FindReleaseAsync(cancellationToken);
 
         if (release is not null && CompareVersions(release.Tag, VersionInfo.Current) > 0)
         {
@@ -50,6 +49,55 @@ public sealed class UpdateChecker
             Version: null,
             ReleaseUrl: null,
             InstallerUrl: null);
+    }
+
+    private async Task<WindowsRelease?> FindReleaseAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var body = await httpClient.GetStringAsync(ReleasesUri, cancellationToken);
+            using var document = JsonDocument.Parse(body);
+            var apiRelease = FindLatestWindowsRelease(document.RootElement);
+            if (apiRelease is not null)
+            {
+                return apiRelease;
+            }
+        }
+        catch (Exception exception) when (
+            exception is HttpRequestException or JsonException or InvalidOperationException)
+        {
+        }
+
+        return await FindReleaseFromLatestPageAsync(cancellationToken);
+    }
+
+    private async Task<WindowsRelease> FindReleaseFromLatestPageAsync(CancellationToken cancellationToken)
+    {
+        using var releaseResponse = await httpClient.GetAsync(
+            LatestReleaseUri,
+            HttpCompletionOption.ResponseHeadersRead,
+            cancellationToken);
+        releaseResponse.EnsureSuccessStatusCode();
+
+        var releaseUri = releaseResponse.RequestMessage?.RequestUri;
+        var tag = releaseUri is null
+            ? ""
+            : Regex.Match(releaseUri.AbsolutePath, @"/releases/tag/([^/]+)/*$").Groups[1].Value;
+        tag = Uri.UnescapeDataString(tag);
+        if (VersionParts(tag).Length < 2)
+        {
+            throw new InvalidOperationException("无法从 GitHub Release 页面识别最新版本。");
+        }
+
+        var installerName = $"ShotLens-Windows-{tag}-Setup.exe";
+        var installerUrl = $"https://github.com/qcsidios/ShotLens-Windows/releases/download/{Uri.EscapeDataString(tag)}/{installerName}";
+        using var installerResponse = await httpClient.GetAsync(
+            installerUrl,
+            HttpCompletionOption.ResponseHeadersRead,
+            cancellationToken);
+        installerResponse.EnsureSuccessStatusCode();
+
+        return new WindowsRelease(tag, releaseUri!.ToString(), installerUrl);
     }
 
     public async Task<string> DownloadInstallerAsync(

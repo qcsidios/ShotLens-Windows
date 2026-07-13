@@ -1,9 +1,11 @@
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using ShotLens.Windows.App.Services;
 using ShotLens.Windows.Core;
 
 await VersionInfoTests.ReadsSharedRootVersion();
+await UpdateCheckerTests.UsesReleasePageWhenApiIsUnavailable();
 await TranslationSettingsTests.NormalizesCommonOpenAIEndpointForms();
 await TranslationSettingsTests.UsesDefaultFallbackWhenSavedFieldsAreEmpty();
 await OpenAITranslatorTests.ParsesCommonModelResponseShapes();
@@ -16,8 +18,27 @@ static class VersionInfoTests
     public static Task ReadsSharedRootVersion()
     {
         Assert.Equal("v0.1.5", VersionInfo.Current);
-        Assert.Equal("0.8.12", VersionInfo.SemVer);
+        Assert.Equal("0.1.5", VersionInfo.SemVer);
         return Task.CompletedTask;
+    }
+}
+
+static class UpdateCheckerTests
+{
+    public static async Task UsesReleasePageWhenApiIsUnavailable()
+    {
+        var checker = new UpdateChecker(new HttpClient(new ReleaseFallbackHandler()));
+
+        var result = await checker.CheckAsync();
+
+        Assert.True(result.HasUpdate);
+        Assert.Equal("v0.1.6", result.Version);
+        Assert.Equal(
+            "https://github.com/qcsidios/ShotLens-Windows/releases/tag/v0.1.6",
+            result.ReleaseUrl);
+        Assert.Equal(
+            "https://github.com/qcsidios/ShotLens-Windows/releases/download/v0.1.6/ShotLens-Windows-v0.1.6-Setup.exe",
+            result.InstallerUrl);
     }
 }
 
@@ -128,6 +149,47 @@ sealed class StaticOpenAIHandler(string assistantContent) : HttpMessageHandler
         {
             Content = new StringContent(body, Encoding.UTF8, "application/json")
         };
+    }
+}
+
+sealed class ReleaseFallbackHandler : HttpMessageHandler
+{
+    protected override Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        var uri = request.RequestUri?.ToString() ?? "";
+        if (uri.StartsWith("https://api.github.com/", StringComparison.Ordinal))
+        {
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+            {
+                RequestMessage = request
+            });
+        }
+
+        if (uri == "https://github.com/qcsidios/ShotLens-Windows/releases/latest")
+        {
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    "https://github.com/qcsidios/ShotLens-Windows/releases/tag/v0.1.6")
+            });
+        }
+
+        if (uri == "https://github.com/qcsidios/ShotLens-Windows/releases/download/v0.1.6/ShotLens-Windows-v0.1.6-Setup.exe")
+        {
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = request,
+                Content = new ByteArrayContent([])
+            });
+        }
+
+        return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)
+        {
+            RequestMessage = request
+        });
     }
 }
 

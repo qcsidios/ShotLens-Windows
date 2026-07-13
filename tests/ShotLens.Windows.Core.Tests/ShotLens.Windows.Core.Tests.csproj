@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/ShotLens.Windows.Core/ShotLens.Windows.Core.csproj" />
+    <Compile Include="../../src/ShotLens.Windows.App/Services/UpdateChecker.cs" Link="UpdateChecker.cs" />
   </ItemGroup>
 </Project>

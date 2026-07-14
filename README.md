@@ -10,7 +10,7 @@ ShotLens 是一款 Windows 截图翻译工具。它支持全局快捷键截图�
 
 ## 安装
 
-从 [GitHub Releases](https://github.com/qcsidios/ShotLens-Windows/releases) 下载最新的：
+从 [GitHub Releases](https://github.com/readercyl/ShotLens-Windows/releases) 下载最新的：
 
 ```text
 ShotLens-Windows-vX.Y.Z-Setup.exe

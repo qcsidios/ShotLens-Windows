@@ -2,8 +2,8 @@
 
 > 状态：已确认，待执行
 > 日期：2026-06-29
-> 原仓库：`qcsidios/ShotLens`
-> 新仓库：`qcsidios/ShotLens-Windows`
+> 原仓库：`readercyl/ShotLens`
+> 新仓库：`readercyl/ShotLens-Windows`
 
 ## 1. 目标
 
@@ -13,8 +13,8 @@
 
 - 本地 macOS 仓库位于 `/Users/chenyilin/Vibe Coding/ShotLens`。
 - 本地 Windows 仓库位于 `/Users/chenyilin/Vibe Coding/ShotLens-Windows`。
-- GitHub macOS 仓库为 `qcsidios/ShotLens`，`main` 回退并固定在 macOS `v0.8.7`。
-- GitHub Windows 仓库为公开仓库 `qcsidios/ShotLens-Windows`。
+- GitHub macOS 仓库为 `readercyl/ShotLens`，`main` 回退并固定在 macOS `v0.8.7`。
+- GitHub Windows 仓库为公开仓库 `readercyl/ShotLens-Windows`。
 - Windows 历史代码保持原样，只调整版本号和独立仓库所必需的路径、URL、文档及工作流。
 - 后续 Windows 重构从 `v0.2.0` 开始，不在本次仓库迁移中开发。
 
@@ -67,7 +67,7 @@ ShotLens-Windows/
 
 - 构建脚本路径改为新根目录结构。
 - `Directory.Build.props` 从新仓库根目录读取 `VERSION`。
-- 更新器、安装器和文档中的仓库 URL 改为 `qcsidios/ShotLens-Windows`。
+- 更新器、安装器和文档中的仓库 URL 改为 `readercyl/ShotLens-Windows`。
 - Windows Release 工作流只构建 Windows 安装包。
 - README 改为 Windows-only 使用、构建和发布说明。
 - `REQUIREMENTS.md` 的下一开发版本从 `v0.9.0` 改为 `v0.2.0`。
@@ -114,7 +114,7 @@ ShotLens-Windows/
 
 ## 6. 原 macOS 仓库回退与清理
 
-新仓库验证通过后，对 `qcsidios/ShotLens` 执行：
+新仓库验证通过后，对 `readercyl/ShotLens` 执行：
 
 1. 将 `main` 回退到提交 `ea0fdc6`，即 macOS `v0.8.7`。
 2. 强制推送回退后的 `main`。

@@ -34,10 +34,10 @@ static class UpdateCheckerTests
         Assert.True(result.HasUpdate);
         Assert.Equal("v0.1.6", result.Version);
         Assert.Equal(
-            "https://github.com/qcsidios/ShotLens-Windows/releases/tag/v0.1.6",
+            "https://github.com/readercyl/ShotLens-Windows/releases/tag/v0.1.6",
             result.ReleaseUrl);
         Assert.Equal(
-            "https://github.com/qcsidios/ShotLens-Windows/releases/download/v0.1.6/ShotLens-Windows-v0.1.6-Setup.exe",
+            "https://github.com/readercyl/ShotLens-Windows/releases/download/v0.1.6/ShotLens-Windows-v0.1.6-Setup.exe",
             result.InstallerUrl);
     }
 }
@@ -167,17 +167,17 @@ sealed class ReleaseFallbackHandler : HttpMessageHandler
             });
         }
 
-        if (uri == "https://github.com/qcsidios/ShotLens-Windows/releases/latest")
+        if (uri == "https://github.com/readercyl/ShotLens-Windows/releases/latest")
         {
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 RequestMessage = new HttpRequestMessage(
                     HttpMethod.Get,
-                    "https://github.com/qcsidios/ShotLens-Windows/releases/tag/v0.1.6")
+                    "https://github.com/readercyl/ShotLens-Windows/releases/tag/v0.1.6")
             });
         }
 
-        if (uri == "https://github.com/qcsidios/ShotLens-Windows/releases/download/v0.1.6/ShotLens-Windows-v0.1.6-Setup.exe")
+        if (uri == "https://github.com/readercyl/ShotLens-Windows/releases/download/v0.1.6/ShotLens-Windows-v0.1.6-Setup.exe")
         {
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {

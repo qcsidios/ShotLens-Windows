@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Move all Windows source history, versions, releases, tags, and build automation into `qcsidios/ShotLens-Windows`, then restore `qcsidios/ShotLens` to the macOS `v0.8.7` state.
+**Goal:** Move all Windows source history, versions, releases, tags, and build automation into `readercyl/ShotLens-Windows`, then restore `readercyl/ShotLens` to the macOS `v0.8.7` state.
 
 **Architecture:** Create a Windows-only repository by filtering the current linear history down to Windows paths. Preserve the historical Windows code states, add version/repository-only release commits for `v0.1.0–v0.1.5`, and rebuild every installer in the new repository before deleting anything from the old repository.
 
@@ -55,7 +55,7 @@ Expected: the new repository history contains Windows commits only and has no Sw
 
 - [ ] For each source commit, create a detached release adaptation commit.
 - [ ] Replace only the matching old version with the new version in tracked text files.
-- [ ] Replace `qcsidios/ShotLens` repository URLs with `qcsidios/ShotLens-Windows`.
+- [ ] Replace `readercyl/ShotLens` repository URLs with `readercyl/ShotLens-Windows`.
 - [ ] Create the corresponding annotated `v0.1.x` tag.
 - [ ] Verify each tagged tree has the expected `VERSION`, updater URL, installer URL, and build workflow.
 
@@ -93,7 +93,7 @@ Expected: current `main` is a standalone Windows repository at `v0.1.5`; no new 
 
 ### Task 5: Create and push the new GitHub repository
 
-- [ ] Create public repository `qcsidios/ShotLens-Windows`.
+- [ ] Create public repository `readercyl/ShotLens-Windows`.
 - [ ] Set the local Windows `origin` to the new repository.
 - [ ] Push `main`.
 - [ ] Push `v0.1.0–v0.1.5`.
@@ -132,7 +132,7 @@ Expected: six successful releases exist in order and all installers are download
 
 ### Task 8: Restore and clean the macOS repository
 
-**Remote repository:** `qcsidios/ShotLens`
+**Remote repository:** `readercyl/ShotLens`
 
 - [ ] Re-check that Task 6 is fully complete.
 - [ ] Force-push commit `ea0fdc6` to remote `main` using `--force-with-lease`.

@@ -16,8 +16,8 @@ public sealed record UpdateCheckResult(
 
 public sealed class UpdateChecker
 {
-    private static readonly Uri ReleasesUri = new("https://api.github.com/repos/qcsidios/ShotLens-Windows/releases?per_page=30");
-    private static readonly Uri LatestReleaseUri = new("https://github.com/qcsidios/ShotLens-Windows/releases/latest");
+    private static readonly Uri ReleasesUri = new("https://api.github.com/repos/readercyl/ShotLens-Windows/releases?per_page=30");
+    private static readonly Uri LatestReleaseUri = new("https://github.com/readercyl/ShotLens-Windows/releases/latest");
     private readonly HttpClient httpClient;
 
     public UpdateChecker(HttpClient? httpClient = null)
@@ -90,7 +90,7 @@ public sealed class UpdateChecker
         }
 
         var installerName = $"ShotLens-Windows-{tag}-Setup.exe";
-        var installerUrl = $"https://github.com/qcsidios/ShotLens-Windows/releases/download/{Uri.EscapeDataString(tag)}/{installerName}";
+        var installerUrl = $"https://github.com/readercyl/ShotLens-Windows/releases/download/{Uri.EscapeDataString(tag)}/{installerName}";
         using var installerResponse = await httpClient.GetAsync(
             installerUrl,
             HttpCompletionOption.ResponseHeadersRead,
